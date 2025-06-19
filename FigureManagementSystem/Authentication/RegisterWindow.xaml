@@ -1,0 +1,266 @@
+﻿<Window x:Class="FigureManagementSystem.RegisterWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Register"
+        Height="725"
+        Width="900"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        ResizeMode="NoResize"
+        Background="Transparent"
+        AllowsTransparency="True">
+    <Window.Resources>
+        <FontFamily x:Key="GloriaFont">/FigureManagementSystem;component/Fonts/#Gloria Hallelujah</FontFamily>
+        <FontFamily x:Key="NotoSans">/FigureManagementSystem;component/Fonts/#Noto Sans</FontFamily>
+        <!-- Gradient Brushes -->
+        <LinearGradientBrush x:Key="BackgroundGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#F0F8FF" Offset="0"/>
+            <GradientStop Color="#E6E6FA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Button Styles -->
+        <Style x:Key="SignupButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#20B2AA"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                            CornerRadius="8" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#008B8B"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#006666"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        
+        <!-- TextBox Style -->
+        <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border 
+                    x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    CornerRadius="8">
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}" 
+                                  Focusable="False"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="border" Property="Background" Value="#FFF0F0F0"/>
+                                <Setter TargetName="border" Property="BorderBrush" Value="#FFD9D9D9"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#20B2AA"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- PasswordBox Style -->
+        <Style x:Key="InputPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="White" 
+                            CornerRadius="8" 
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                    Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#20B2AA"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Button Hover Transparent Style -->
+        <Style x:Key="ButtonHoverTransparent" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter 
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                RecognizesAccessKey="True"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="#CCC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Link Button Style -->
+        <Style x:Key="LinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#20B2AA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#008B8B"/>
+                                <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <Border CornerRadius="14" Background="White"  >
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" />
+                <ColumnDefinition Width="3*" />
+            </Grid.ColumnDefinitions>
+            <!-- Left image or color block -->
+            <Border Grid.Column="0" Background="#18305B" CornerRadius="14,0,0,14">
+                <!-- Use your own image: -->
+                <Image Source="/mnt/data/ba5e5e00-e88b-49e4-92f1-80127e655112.png" Stretch="UniformToFill" Opacity="0.8"/>
+            </Border>
+
+            <!-- Registration form on right -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <!-- Center the form vertically -->
+                <Button x:Name="CloseButton" 
+                        Content="✕" 
+                        HorizontalAlignment="Right" 
+                        VerticalAlignment="Top" 
+                        Margin="0,0,10,0" 
+                        Width="30" 
+                        Height="30" 
+                        Background="Transparent" 
+                        BorderThickness="0" 
+                        Foreground="#999" 
+                        FontSize="16" 
+                        Cursor="Hand"
+                        Focusable="False"
+                        Style="{StaticResource ButtonHoverTransparent}"
+                        Click="CloseButton_Click"/>
+                <StackPanel Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Width="360">
+                    <TextBlock Text="Sign up" FontWeight="Bold" FontSize="20" Foreground="#222" Margin="0,0,0,10"/>
+
+                    <!-- First Name -->
+                    <TextBlock Text="First name *" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="FirstNameTextBox" Margin="0,0,0,16"
+                             Style="{StaticResource InputTextBoxStyle}" LostFocus="FirstNameTextBox_LostFocus" Tag="Enter your first name"/>
+                    <TextBlock x:Name="FirstNameError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Last Name -->
+                    <TextBlock Text="Last name *" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="LastNameTextBox" Margin="0,0,0,16" 
+                             Style="{StaticResource InputTextBoxStyle}" LostFocus="LastNameTextBox_LostFocus"/>
+                    <TextBlock x:Name="LastNameError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Email / Username -->
+                    <TextBlock Text="Username *" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="UsernameTextBox" Margin="0,0,0,16" 
+                             Style="{StaticResource InputTextBoxStyle}" LostFocus="UsernameTextBox_LostFocus"/>
+                    <TextBlock x:Name="UsernameError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Password -->
+                    <TextBlock Text="Password *" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <PasswordBox x:Name="PasswordBox" Margin="0,0,0,16" 
+                                 Style="{StaticResource InputPasswordBoxStyle}" LostFocus="PasswordBox_LostFocus"/>
+                    <TextBlock x:Name="PasswordError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Email -->
+                    <TextBlock Text="Email" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="EmailTextBox" Margin="0,0,0,16" 
+                    Style="{StaticResource InputTextBoxStyle}" LostFocus="EmailTextBox_LostFocus"/>
+                    <TextBlock x:Name="EmailError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+                    
+                    <!-- Address -->
+                    <TextBlock Text="Address" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="AddressTextBox" Margin="0,0,0,16" 
+                             Style="{StaticResource InputTextBoxStyle}" LostFocus="AddressTextBox_LostFocus"/>
+                    <TextBlock x:Name="AddressError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Phone -->
+                    <TextBlock Text="Phone *" FontWeight="SemiBold" Margin="0,0,0,6" FontSize="13"/>
+                    <TextBox x:Name="PhoneTextBox" Margin="0,0,0,20"
+                             Style="{StaticResource InputTextBoxStyle}" LostFocus="PhoneTextBox_LostFocus"/>
+                    <TextBlock x:Name="PhoneError" FontSize="10" Margin="10,-10,0,0" Foreground="Red"/>
+
+                    <!-- Register Button -->
+                    <Button x:Name="RegisterButton"
+                            Content="Sign up"
+                            FontWeight="Bold"
+                            FontSize="15"
+                            Style="{StaticResource SignupButtonStyle}"
+                            Margin="0,14,0,0"
+                            Click="RegisterButton_Click"/>
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</Window>

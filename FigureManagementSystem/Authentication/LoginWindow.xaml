@@ -1,0 +1,345 @@
+﻿<Window x:Class="FigureManagementSystem.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FigureManagementSystem"
+        mc:Ignorable="d"
+        Title="FMS - Login" Height="750" Width="550"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        Background="Transparent"
+        ResizeMode="NoResize">
+    <Window.Resources>
+        <FontFamily x:Key="GloriaFont">/FigureManagementSystem;component/Fonts/#Gloria Hallelujah</FontFamily>
+        <FontFamily x:Key="NotoSans">/FigureManagementSystem;component/Fonts/#Noto Sans</FontFamily>
+        <!-- Gradient Brushes -->
+        <LinearGradientBrush x:Key="BackgroundGradient" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#F0F8FF" Offset="0"/>
+            <GradientStop Color="#E6E6FA" Offset="1"/>
+        </LinearGradientBrush>
+
+        <!-- Button Styles -->
+        <Style x:Key="LoginButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#20B2AA"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0,12"/>
+            <Setter Property="FontFamily" Value="{StaticResource NotoSans}"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#008B8B"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#006666"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="GoogleButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Foreground" Value="#666"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Padding" Value="0,12"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="8" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#F8F8F8"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="White" 
+                                CornerRadius="8" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#20B2AA"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- PasswordBox Style -->
+        <Style x:Key="InputPasswordBoxStyle" TargetType="PasswordBox">
+            <Setter Property="Padding" Value="12,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#DDD"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="PasswordBox">
+                        <Border Background="White" 
+                                CornerRadius="8" 
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                Name="border">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                        Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="border" Property="BorderBrush" Value="#20B2AA"/>
+                                <Setter TargetName="border" Property="BorderThickness" Value="2"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
+        <!-- Button Hover Transparent Style -->
+        <Style x:Key="ButtonHoverTransparent" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="OverridesDefaultStyle" Value="True"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter 
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    RecognizesAccessKey="True"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                    <Setter Property="BorderBrush" Value="Transparent"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="#CCC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Link Button Style -->
+        <Style x:Key="LinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#20B2AA"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter/>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Foreground" Value="#008B8B"/>
+                                <Setter Property="TextBlock.TextDecorations" Value="Underline"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
+    <Border Background="{StaticResource BackgroundGradient}" CornerRadius="16">
+        <Grid>
+            <!-- Close Button -->
+            <Button x:Name="CloseButton" 
+                    Content="✕" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Margin="0,10,15,0" 
+                    Width="30" 
+                    Height="30" 
+                    Background="Transparent" 
+                    BorderThickness="0" 
+                    Foreground="#999" 
+                    FontSize="16" 
+                    Cursor="Hand"
+                    Click="CloseButton_Click"/>
+
+            <!-- Main Content -->
+            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="320">
+
+                <!-- Logo and Title Section -->
+                <StackPanel HorizontalAlignment="Center" Margin="0,0,0,40">
+                    <!-- Logo -->
+                    <Border Width="96" Height="96"
+                            CornerRadius="16" 
+                            Margin="0,0,0,16">
+                        <Viewbox Width="48" Height="48">
+                            <Canvas Width="64" Height="64">
+                                <!-- Figure Silhouette -->
+                                <Path Fill="White" 
+                                      Data="M32,8 C28,8 24,10 24,14 L24,18 C24,20 25,22 27,23 L25,31 C24,33 25,35 27,36 L24,48 C24,50 25,52 27,52 L29,52 L29,60 C29,62 31,64 33,64 C35,64 39,62 39,60 L39,52 L41,52 C43,52 44,50 44,48 L41,36 C43,35 44,33 43,31 L41,23 C43,22 44,20 44,18 L44,14 C44,10 40,8 36,8 Z"/>
+                                <!-- Base Stand -->
+                                <Ellipse Canvas.Left="20" Canvas.Top="55" Width="24" Height="6" Fill="White" Opacity="0.6"/>
+                            </Canvas>
+                        </Viewbox>
+                    </Border>
+
+                    <!-- Title -->
+                    <TextBlock Text="Welcome to SaeFigure" 
+                               FontSize="24" 
+                               FontWeight="Bold" 
+                               Foreground="#333" 
+                               HorizontalAlignment="Center" 
+                               Margin="0,0,0,8"/>
+
+                    <!-- Subtitle -->
+                    <TextBlock Text="Figure Management System" 
+                               FontSize="12" 
+                               Foreground="#666" 
+                               HorizontalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Login Form -->
+                <StackPanel>
+                    <!-- Username Field -->
+                    <StackPanel Margin="0,0,0,20">
+                        <TextBlock Text="Email or username" 
+                                   FontSize="13" 
+                                   FontWeight="Medium" 
+                                   Foreground="#333" 
+                                   Margin="0,0,0,8"/>
+                        <TextBox x:Name="UsernameTextBox" 
+                                 Style="{StaticResource InputTextBoxStyle}"
+                                 Tag="Enter your email or username"/>
+                    </StackPanel>
+
+                    <!-- Password Field -->
+                    <StackPanel Margin="0,0,0,24">
+                        <TextBlock Text="Password" 
+                                   FontSize="13" 
+                                   FontWeight="Medium" 
+                                   Foreground="#333" 
+                                   Margin="0,0,0,8"/>
+                        <Grid>
+                            <PasswordBox x:Name="PasswordBox" 
+                                         Style="{StaticResource InputPasswordBoxStyle}"
+                                         Visibility="Visible"/>
+                            <TextBox x:Name="PasswordTextBox" 
+                                     Style="{StaticResource InputTextBoxStyle}"
+                                     Visibility="Collapsed"/>
+                            <Button x:Name="ShowPasswordButton" 
+                                    Style="{StaticResource ButtonHoverTransparent}"
+                                    Content="👁" 
+                                    HorizontalAlignment="Right" 
+                                    VerticalAlignment="Center" 
+                                    Margin="0,0,12,0" 
+                                    Background="Transparent" 
+                                    BorderThickness="0" 
+                                    Foreground="#999" 
+                                    FontSize="16" 
+                                    Cursor="Hand"
+                                    Click="ShowPasswordButton_Click"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <!-- Login Button -->
+                    <Button x:Name="LoginButton" 
+                            Content="Log in" 
+                            Style="{StaticResource LoginButtonStyle}" 
+                            Margin="0,0,0,24"
+                            Click="LoginButton_Click"/>
+
+                    <!-- Divider -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
+                        <Rectangle Height="1" Width="80" Fill="#DDD"/>
+                        <TextBlock Text="Or" Margin="12,0" FontSize="13" Foreground="#666"/>
+                        <Rectangle Height="1" Width="80" Fill="#DDD"/>
+                    </StackPanel>
+
+                    <!-- Google Login Button -->
+                    <Button x:Name="GoogleLoginButton" 
+                            Style="{StaticResource GoogleButtonStyle}" 
+                            Margin="0,0,0,32"
+                            Click="GoogleLoginButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <!-- Google Icon -->
+                            <Canvas Width="20" Height="20" Margin="0,0,8,0">
+                                <Path Fill="#4285F4" Data="M19.6,10.23c0-0.82-0.1-1.42-0.25-2.05H12v3.72h4.92c-0.26,1.37-1.04,2.53-2.21,3.31v2.77h3.57C20.36,16.13,19.6,13.11,19.6,10.23z"/>
+                                <Path Fill="#34A853" Data="M12,20c2.97,0,5.46-0.98,7.28-2.66l-3.57-2.77c-0.98,0.66-2.23,1.06-3.71,1.06-2.86,0-5.29-1.93-6.16-4.53H2.18v2.84C3.99,17.53,7.7,20,12,20z"/>
+                                <Path Fill="#FBBC05" Data="M5.84,11.09c-0.22-0.66-0.35-1.36-0.35-2.09s0.13-1.43,0.35-2.09V4.07H2.18C1.43,5.55,1,7.22,1,9s0.43,3.45,1.18,4.93L5.84,11.09z"/>
+                                <Path Fill="#EA4335" Data="M12,3.38c1.62,0,3.06,0.56,4.21,1.64l3.15-3.15C17.45,0.09,14.97-1,12-1C7.7-1,3.99,1.47,2.18,5.07l3.66,2.84C6.71,5.31,9.14,3.38,12,3.38z"/>
+                            </Canvas>
+                            <TextBlock Text="Log in with Google"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Footer Links -->
+                    <StackPanel HorizontalAlignment="Center">
+                        <Button x:Name="ForgotPasswordButton" 
+                                Content="Forgot password?" 
+                                Style="{StaticResource LinkButtonStyle}" 
+                                Margin="0,0,0,16"
+                                Click="ForgotPasswordButton_Click"/>
+
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="Don't have an account? " 
+                                       FontSize="13" 
+                                       Foreground="#666"/>
+                            <Button x:Name="RegisterButton" 
+                                    Content="Sign up" 
+                                    Style="{StaticResource LinkButtonStyle}"
+                                    Click="RegisterButton_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+    </Border>
+</Window>

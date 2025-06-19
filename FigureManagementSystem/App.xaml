@@ -1,0 +1,28 @@
+﻿<Application x:Class="FigureManagementSystem.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:FigureManagementSystem"
+             StartupUri="Authentication/LoginWindow.xaml">
+    <Application.Resources>
+        <!-- Define Noto Sans FontFamily resource -->
+        <FontFamily x:Key="NotoSans">/FigureManagementSystem;component/Fonts/#Noto Sans</FontFamily>
+
+        <!-- Set global TextBlock style -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+            <Setter Property="FontWeight" Value="Regular"/>
+        </Style>
+
+        <!-- Set global Label style -->
+        <Style TargetType="Label">
+            <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+            <Setter Property="FontWeight" Value="Regular"/>
+        </Style>
+
+        <!-- Set global TextBox style (optional) -->
+        <Style TargetType="TextBox">
+            <Setter Property="FontFamily" Value="{StaticResource NotoSans}" />
+            <Setter Property="FontWeight" Value="Regular"/>
+        </Style>
+    </Application.Resources>
+</Application>
