@@ -2,10 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:FigureManagementSystem"
-             StartupUri="Authentication/LoginWindow.xaml">
+             StartupUri="Views/MasterDataWindow.xaml">
     <Application.Resources>
         <!-- Define Noto Sans FontFamily resource -->
-        <FontFamily x:Key="NotoSans">/FigureManagementSystem;component/Fonts/#Noto Sans</FontFamily>
+        <FontFamily x:Key="NotoSans">/FigureManagementSystem;component/Resources/Fonts/#Noto Sans</FontFamily>
 
         <!-- Set global TextBlock style -->
         <Style TargetType="TextBlock">

@@ -11,17 +11,24 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using FigureManagementSystem.ViewModels;
 
-namespace FigureManagementSystem.Admin
+namespace FigureManagementSystem.Views
 {
     /// <summary>
-    /// Interaction logic for SeriesWindow.xaml
+    /// Interaction logic for MasterDataWindow.xaml
     /// </summary>
-    public partial class SeriesWindow : Window
+    public partial class MasterDataWindow : Window
     {
-        public SeriesWindow()
+        public MasterDataWindow()
         {
             InitializeComponent();
+            this.DataContext = new MasterDataViewModel(this);
+        }
+
+        private void BtnSeries_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

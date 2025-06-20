@@ -1,63 +1,59 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using FigureManagementSystem.Models;
+using FigureManagementSystem.Views;
 
-namespace FigureManagementSystem
+namespace FigureManagementSystem.ViewModels
 {
-    /// <summary>
-    /// Interaction logic for LoginWindow.xaml
-    /// </summary>
-    public partial class LoginWindow : Window
+    public class LoginViewModel
     {
+        private readonly LoginWindow _window;
         private bool isPasswordVisible = false;
 
-        public LoginWindow()
+        public LoginViewModel(LoginWindow window)
         {
-            InitializeComponent();
-            this.KeyDown += LoginScreen_KeyDown;
+            _window = window;
+
+            // Assign event handlers to the view's controls
+            _window.CloseButton.Click += CloseButton_Click;
+            _window.LoginButton.Click += LoginButton_Click;
+            _window.GoogleLoginButton.Click += GoogleLoginButton_Click;
+            _window.ForgotPasswordButton.Click += ForgotPasswordButton_Click;
+            _window.RegisterButton.Click += RegisterButton_Click;
+            _window.ShowPasswordButton.Click += ShowPasswordButton_Click;
+            _window.KeyDown += LoginScreen_KeyDown;
         }
 
         private void LoginScreen_KeyDown(object sender, KeyEventArgs e)
         {
-            // Allow Enter key to trigger login
             if (e.Key == Key.Enter)
             {
                 LoginButton_Click(sender, e);
             }
-            // Allow Escape key to close window
             else if (e.Key == Key.Escape)
             {
-                this.Close();
+                _window.Close();
             }
         }
 
         private void CloseButton_Click(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            _window.Close();
         }
 
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
-            string username = UsernameTextBox.Text.Trim();
-            string password = isPasswordVisible ? PasswordTextBox.Text : PasswordBox.Password;
+            string username = _window.UsernameTextBox.Text.Trim();
+            string password = isPasswordVisible ? _window.PasswordTextBox.Text : _window.PasswordBox.Password;
 
-            // Basic validation
             if (string.IsNullOrEmpty(username))
             {
                 MessageBox.Show("Please enter your username or email.", "Login Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
-                UsernameTextBox.Focus();
+                _window.UsernameTextBox.Focus();
                 return;
             }
 
@@ -66,9 +62,9 @@ namespace FigureManagementSystem
                 MessageBox.Show("Please enter your password.", "Login Error",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 if (isPasswordVisible)
-                    PasswordTextBox.Focus();
+                    _window.PasswordTextBox.Focus();
                 else
-                    PasswordBox.Focus();
+                    _window.PasswordBox.Focus();
                 return;
             }
 
@@ -83,11 +79,11 @@ namespace FigureManagementSystem
                     MessageBoxButton.OK, MessageBoxImage.Error);
 
                 if (isPasswordVisible)
-                    PasswordTextBox.Clear();
+                    _window.PasswordTextBox.Clear();
                 else
-                    PasswordBox.Clear();
+                    _window.PasswordBox.Clear();
 
-                UsernameTextBox.Focus();
+                _window.UsernameTextBox.Focus();
             }
         }
 
@@ -102,7 +98,8 @@ namespace FigureManagementSystem
                 if (user != null)
                 {
                     return user.Password.Equals(password);
-                } else
+                }
+                else
                 {
                     return false;
                 }
@@ -113,80 +110,51 @@ namespace FigureManagementSystem
         {
             if (isPasswordVisible)
             {
-                // Hide password
-                PasswordBox.Password = PasswordTextBox.Text;
-                PasswordBox.Visibility = Visibility.Visible;
-                PasswordTextBox.Visibility = Visibility.Collapsed;
-                ShowPasswordButton.Content = "👁";
+                _window.PasswordBox.Password = _window.PasswordTextBox.Text;
+                _window.PasswordBox.Visibility = Visibility.Visible;
+                _window.PasswordTextBox.Visibility = Visibility.Collapsed;
+                _window.ShowPasswordButton.Content = "👁";
                 isPasswordVisible = false;
-                PasswordBox.Focus();
+                _window.PasswordBox.Focus();
             }
             else
             {
-                // Show password
-                PasswordTextBox.Text = PasswordBox.Password;
-                PasswordTextBox.Visibility = Visibility.Visible;
-                PasswordBox.Visibility = Visibility.Collapsed;
-                ShowPasswordButton.Content = "🙈";
+                _window.PasswordTextBox.Text = _window.PasswordBox.Password;
+                _window.PasswordTextBox.Visibility = Visibility.Visible;
+                _window.PasswordBox.Visibility = Visibility.Collapsed;
+                _window.ShowPasswordButton.Content = "🙈";
                 isPasswordVisible = true;
-                PasswordTextBox.Focus();
+                _window.PasswordTextBox.Focus();
             }
         }
 
         private void GoogleLoginButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Implement Google OAuth authentication
             MessageBox.Show("Google login functionality will be implemented here.",
                 "Google Login", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // Example implementation would involve:
-            // 1. Redirect to Google OAuth URL
-            // 2. Handle the callback
-            // 3. Validate the token
-            // 4. Create or update user in your database
-            // 5. Proceed with login
         }
 
         private void ForgotPasswordButton_Click(object sender, RoutedEventArgs e)
         {
-            // TODO: Open forgot password window or dialog
             MessageBox.Show("Forgot password functionality will be implemented here.",
                 "Forgot Password", MessageBoxButton.OK, MessageBoxImage.Information);
-
-            // You might want to:
-            // 1. Open a new window for password reset
-            // 2. Send reset email
-            // 3. Provide security questions
         }
 
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
-
             RegisterWindow registerWindow = new RegisterWindow();
-            this.Hide();
+            _window.Hide();
             bool? registered = registerWindow.ShowDialog();
             if (registered == true)
             {
                 MessageBox.Show("Completed", "Good");
             }
-            this.Show();
-
-            // Example:
-            // RegisterWindow registerWindow = new RegisterWindow();
-            // registerWindow.ShowDialog();
+            _window.Show();
         }
-
 
         private bool VerifyPassword(string password, string hashedPassword)
         {
             return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
-        }
-
-        // Window dragging functionality
-        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (e.ChangedButton == MouseButton.Left)
-                this.DragMove();
         }
     }
 }

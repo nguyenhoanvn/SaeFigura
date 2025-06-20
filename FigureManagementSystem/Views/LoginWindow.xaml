@@ -1,9 +1,9 @@
-﻿<Window x:Class="FigureManagementSystem.LoginWindow"
+﻿<Window x:Class="FigureManagementSystem.Views.LoginWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:FigureManagementSystem"
+        xmlns:local="clr-namespace:FigureManagementSystem.Views"
         mc:Ignorable="d"
         Title="FMS - Login" Height="750" Width="550"
         WindowStartupLocation="CenterScreen"
@@ -208,8 +208,7 @@
                     BorderThickness="0" 
                     Foreground="#999" 
                     FontSize="16" 
-                    Cursor="Hand"
-                    Click="CloseButton_Click"/>
+                    Cursor="Hand"/>
 
             <!-- Main Content -->
             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Width="320">
@@ -284,8 +283,7 @@
                                     BorderThickness="0" 
                                     Foreground="#999" 
                                     FontSize="16" 
-                                    Cursor="Hand"
-                                    Click="ShowPasswordButton_Click"/>
+                                    Cursor="Hand"/>
                         </Grid>
                     </StackPanel>
 
@@ -293,8 +291,7 @@
                     <Button x:Name="LoginButton" 
                             Content="Log in" 
                             Style="{StaticResource LoginButtonStyle}" 
-                            Margin="0,0,0,24"
-                            Click="LoginButton_Click"/>
+                            Margin="0,0,0,24"/>
 
                     <!-- Divider -->
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,24">
@@ -306,8 +303,7 @@
                     <!-- Google Login Button -->
                     <Button x:Name="GoogleLoginButton" 
                             Style="{StaticResource GoogleButtonStyle}" 
-                            Margin="0,0,0,32"
-                            Click="GoogleLoginButton_Click">
+                            Margin="0,0,0,32">
                         <StackPanel Orientation="Horizontal">
                             <!-- Google Icon -->
                             <Canvas Width="20" Height="20" Margin="0,0,8,0">
@@ -325,8 +321,7 @@
                         <Button x:Name="ForgotPasswordButton" 
                                 Content="Forgot password?" 
                                 Style="{StaticResource LinkButtonStyle}" 
-                                Margin="0,0,0,16"
-                                Click="ForgotPasswordButton_Click"/>
+                                Margin="0,0,0,16"/>
 
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBlock Text="Don't have an account? " 
@@ -334,8 +329,7 @@
                                        Foreground="#666"/>
                             <Button x:Name="RegisterButton" 
                                     Content="Sign up" 
-                                    Style="{StaticResource LinkButtonStyle}"
-                                    Click="RegisterButton_Click"/>
+                                    Style="{StaticResource LinkButtonStyle}"/>
                         </StackPanel>
                     </StackPanel>
                 </StackPanel>
