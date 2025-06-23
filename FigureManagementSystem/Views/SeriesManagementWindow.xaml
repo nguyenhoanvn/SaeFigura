@@ -284,27 +284,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
 
-                        <DataGridTemplateColumn Header="Actions" 
-                                               Width="200"
-                                               HeaderStyle="{StaticResource DataGridHeaderStyle}">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" 
-                                               HorizontalAlignment="Center">
-                                        <Button Content="Edit" 
-                                               Style="{StaticResource WarningButtonStyle}"
-                                               Padding="8,4"
-                                               Margin="2"
-                                               Tag="{Binding}"/>
-                                        <Button Content="Delete" 
-                                               Style="{StaticResource DangerButtonStyle}"
-                                               Padding="8,4"
-                                               Margin="2"
-                                               Tag="{Binding}"/>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
+                        
                     </DataGrid.Columns>
                 </DataGrid>
 
