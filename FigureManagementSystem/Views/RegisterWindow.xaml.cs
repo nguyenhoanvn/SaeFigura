@@ -259,10 +259,10 @@ namespace FigureManagementSystem
 
         private bool RegisterUser(string firstName, string lastName, string username, string password, string email, string address, string phone)
         {
-            using (var context = new ProjectContext())
+            using (var context = new FigureManagementSystemContext())
             {
-                TblUser userToAdd = new TblUser();
-                userToAdd.UserId = username;
+                User userToAdd = new User();
+                userToAdd.Id = username;
                 userToAdd.FullName = string.Join(firstName, ' ', lastName);
                 userToAdd.Password = password;
                 userToAdd.Email = email;
@@ -271,10 +271,10 @@ namespace FigureManagementSystem
                 userToAdd.Phone = phone;
                 userToAdd.IsActive = true;
 
-                context.TblUsers.Add(userToAdd);
+                context.Users.Add(userToAdd);
                 context.SaveChanges();
-                if (context.TblUsers.Any(u => u.FullName.Equals(string.Join(firstName, ' ', lastName)) &&
-                u.UserId == username))
+                if (context.Users.Any(u => u.FullName.Equals(string.Join(firstName, ' ', lastName)) &&
+                u.Id == username))
                 {
                     return true;
                 } else

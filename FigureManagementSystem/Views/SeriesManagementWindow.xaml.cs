@@ -23,7 +23,6 @@ namespace FigureManagementSystem.Views
         public SeriesManagementWindow()
         {
             InitializeComponent();
-            this.DataContext = new SeriesViewModel(this);
         }
     }
 }

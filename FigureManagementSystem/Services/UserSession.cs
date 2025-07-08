@@ -24,7 +24,7 @@ namespace FigureManagementSystem.Services
             }
         }
 
-        public TblUser CurrentUser { get; set; }
+        public Models.User CurrentUser { get; set; }
 
         private UserSession() { }
     }

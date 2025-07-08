@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using FigureManagementSystem.Models;
 using FigureManagementSystem.Views;
 
 namespace FigureManagementSystem.ViewModels
@@ -22,11 +23,35 @@ namespace FigureManagementSystem.ViewModels
 
         private void BtnSeries_Click(object sender, RoutedEventArgs e)
         {
-            SeriesManagementWindow seriesWindow = new SeriesManagementWindow();
-            _window.Hide();
-            bool? back = seriesWindow.ShowDialog();
+            var viewModel = new GenericManagementViewModel<Series>(
+                ownerWindow: Application.Current.MainWindow,
+                entityName: "Series",
+                idSelector: s => s.Id,
+                displayNameSelector: s => s.Name,
+                searchPredicate: (s, text) => s.Name.Contains(text, StringComparison.OrdinalIgnoreCase),
+                toggleStatusAction: s => s.IsActive = !(s.IsActive ?? false),
+                fieldDefinitions: new List<Helpers.FieldDefinition>
+                {
+                    new() {Label = "Name", PropertyName = nameof(Series.Name), Type = typeof(string)},
+                    new() {Label = "IsActive", PropertyName = nameof(Series.IsActive), Type = typeof(bool?)},
+                }
+            );
+            viewModel.WindowTitle = "Series Management Window";
+            viewModel.WindowSubtitle = "Manage your Series in database";
 
-            _window.Show();
+            var window = new GenericManagementWindow
+            {
+                DataContext = viewModel,
+                Owner = _window 
+            };
+
+            viewModel.CloseAction = () =>
+            {
+                window.DialogResult = true;
+                window.Close();
+            };
+
+            window.ShowDialog();
         }
 
         private void BtnCharacters_Click(object sender, RoutedEventArgs e)

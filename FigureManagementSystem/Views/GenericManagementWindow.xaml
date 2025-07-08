@@ -1,0 +1,348 @@
+﻿<helpers:FullScreenWindow x:Class="FigureManagementSystem.Views.GenericManagementWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:fragments="clr-namespace:FigureManagementSystem.Fragments"
+        xmlns:helpers="clr-namespace:FigureManagementSystem.Helpers"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FigureManagementSystem.Views"
+        mc:Ignorable="d"
+        Title="{Binding WindowTitle}" Height="540" Width="960">
+    <helpers:FullScreenWindow.Resources>
+        <!-- Button Styles -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="7"/>
+            <Setter Property="Background" Value="#007BFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                            CornerRadius="4"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                        VerticalAlignment="Center"
+                                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0056B3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#004085"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SuccessButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#28A745"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#218838"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#1E7E34"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="WarningButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#FFC107"/>
+            <Setter Property="Foreground" Value="#212529"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#E0A800"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#D39E00"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="DangerButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="Background" Value="#DC3545"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#C82333"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#BD2130"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- TextBox Style -->
+        <Style x:Key="ModernTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Padding" Value="5"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="#CED4DA"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}" 
+                            CornerRadius="4">
+                            <ScrollViewer x:Name="PART_ContentHost" 
+                                    Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="BorderBrush" Value="#007BFF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- DataGrid Style -->
+        <Style x:Key="ModernDataGridStyle" TargetType="DataGrid">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="#DEE2E6"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#DEE2E6"/>
+            <Setter Property="RowBackground" Value="White"/>
+            <Setter Property="AlternatingRowBackground" Value="#F8F9FA"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="CanUserReorderColumns" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+        </Style>
+
+        <!-- DataGrid Header Style -->
+        <Style x:Key="DataGridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#E9ECEF"/>
+            <Setter Property="Foreground" Value="#495057"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderBrush" Value="#DEE2E6"/>
+            <Setter Property="BorderThickness" Value="0,0,1,1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+        </Style>
+
+        <!-- DataGrid Cell Style -->
+        <Style x:Key="DataGridCellStyle" TargetType="DataGridCell">
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#E3F2FD"/>
+                    <Setter Property="Foreground" Value="#1976D2"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </helpers:FullScreenWindow.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <Border Grid.Row="0" 
+            Background="#2C3E50" 
+            Padding="20">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="{Binding WindowTitle}" 
+                              FontSize="32" 
+                              FontWeight="Bold" 
+                              Foreground="White"/>
+                    <TextBlock Text="{Binding WindowSubtitle}" 
+                              FontSize="16" 
+                              Foreground="#ADB5BD" 
+                              Margin="0,5,0,0"/>
+                </StackPanel>
+
+                <Button Grid.Column="1"
+                    x:Name="btnBack"
+                    Content="← Back to Main"
+                        Command="{Binding BackCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"/>
+            </Grid>
+        </Border>
+
+        <!-- Search and Filter Section -->
+        <Border Grid.Row="1" 
+            Background="White" 
+            Padding="20,15" 
+            BorderBrush="#DEE2E6" 
+            BorderThickness="0,0,0,1">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" 
+                       Orientation="Horizontal" 
+                       VerticalAlignment="Center">
+                    <TextBlock Text="Search:" 
+                          FontSize="14" 
+                          FontWeight="SemiBold" 
+                          Margin="0,0,10,0" 
+                          VerticalAlignment="Center"/>
+                    <TextBox Name="txtSearch"
+                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Width="300"
+                         Style="{StaticResource ModernTextBoxStyle}"
+                         Tag="Search by series name..."/>
+                    <Button x:Name="btnClearSearch"
+                        Content="Clear"
+                        Command="{Binding ClearSearchCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Background="#6C757D"
+                        Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" 
+                       Orientation="Horizontal" 
+                       VerticalAlignment="Center">
+                    <TextBlock Text="Filter:" 
+                          FontSize="14" 
+                          FontWeight="SemiBold" 
+                          Margin="0,0,10,0" 
+                          VerticalAlignment="Center"/>
+                    <ComboBox Name="cmbStatusFilter"
+                              ItemsSource="{Binding StatusOptions}"
+                              SelectedItem="{Binding SelectedStatus, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                          Width="120"
+                          FontSize="14"
+                          SelectedIndex="0">
+                    </ComboBox>
+                </StackPanel>
+
+                <Button Grid.Column="2"
+                    x:Name="btnRefresh"
+                    Command="{Binding RefreshCommand}"
+                    Content="🔄 Refresh"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Background="#17A2B8"/>
+            </Grid>
+        </Border>
+
+        <!-- Data Grid Section -->
+        <Border Grid.Row="2" 
+            Background="White" 
+            Margin="20,10,20,10" 
+            CornerRadius="8"
+            BorderBrush="#DEE2E6" 
+            BorderThickness="1">
+            <Grid>
+                <DataGrid x:Name="dgSeries"
+                          ItemsSource="{Binding FilteredEntities}"
+                          SelectedItem="{Binding SelectedEntity}"
+                          AutoGenerateColumns="True"
+                          AutoGeneratingColumn="DataGrid_AutoGeneratingColumn"
+                          ColumnWidth="*"
+                      Style="{StaticResource ModernDataGridStyle}">
+                </DataGrid>
+
+                <!-- Empty State -->
+                <StackPanel Name="pnlEmptyState"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Visibility="{Binding EmptyStateVisibility}">
+                    <TextBlock Text="404" 
+                           FontSize="64" 
+                           HorizontalAlignment="Center" 
+                           Opacity="0.3"/>
+                    <TextBlock Text="{Binding EmptyStateTitle}" 
+                           FontSize="18" 
+                           FontWeight="SemiBold" 
+                           Foreground="#6C757D" 
+                           HorizontalAlignment="Center" 
+                           Margin="0,10,0,5"/>
+                    <TextBlock Text="{Binding EmptyStateSubtitle}" 
+                           FontSize="14" 
+                           Foreground="#ADB5BD" 
+                           HorizontalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Action Buttons Section -->
+        <Border Grid.Row="3" 
+            Background="White" 
+            Padding="20,15" 
+            BorderBrush="#DEE2E6" 
+            BorderThickness="0,1,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <!-- Selection Info -->
+                <StackPanel Grid.Column="0" 
+                       Orientation="Horizontal" 
+                       VerticalAlignment="Center">
+                    <TextBlock Name="lblSelectionInfo" 
+                           Text="{Binding SelectionInfo}" 
+                           FontSize="14" 
+                           Foreground="#6C757D" 
+                           VerticalAlignment="Center"/>
+                    <TextBlock Name="lblTotalCount" 
+                           Text="{Binding TotalCountInfo}" 
+                           FontSize="14" 
+                           Foreground="#6C757D" 
+                           Margin="20,0,0,0" 
+                           VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <!-- Action Buttons -->
+                <StackPanel Grid.Column="1" 
+                       Orientation="Horizontal">
+                    <Button x:Name="btnAddNew"
+                            Command="{Binding AddNewCommand}"
+                        Content="➕ Add New Series"
+                        Style="{StaticResource SuccessButtonStyle}"/>
+
+                    <Button x:Name="btnEditSelected"
+                            Command="{Binding EditSelectedCommand}"
+                        Content="✏️ Edit Selected"
+                        Style="{StaticResource WarningButtonStyle}"
+                        IsEnabled="True"/>
+
+                    <Button x:Name="btnDeleteSelected"
+                            Command="{Binding DeleteSelectedCommand}"
+                        Content="🗑️ Delete Selected"
+                        Style="{StaticResource DangerButtonStyle}"
+                        IsEnabled="True"/>
+
+                    <Button x:Name="btnToggleStatus"
+                            Command="{Binding ToggleStatusCommand}"
+                        Content="🔄 Toggle Status"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Background="#17A2B8"
+                        IsEnabled="True"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+        <fragments:FooterControl Grid.Row="4"/>
+    </Grid>
+</helpers:FullScreenWindow>

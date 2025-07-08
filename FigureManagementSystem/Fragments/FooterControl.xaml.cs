@@ -10,22 +10,23 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
-using FigureManagementSystem.Helpers;
-using FigureManagementSystem.ViewModels;
 
-namespace FigureManagementSystem.Views
+namespace FigureManagementSystem.Fragments
 {
     /// <summary>
-    /// Interaction logic for MasterDataWindow.xaml
+    /// Interaction logic for FooterControl.xaml
     /// </summary>
-    public partial class MasterDataWindow : FullScreenWindow
+    public partial class FooterControl : UserControl
     {
-        public MasterDataWindow()
+        public FooterControl()
         {
             InitializeComponent();
-            this.DataContext = new MasterDataViewModel(this);
         }
-
+        private void ExitButton_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Shutdown(); 
+        }
     }
 }

@@ -89,10 +89,10 @@ namespace FigureManagementSystem.ViewModels
 
         private bool AuthenticateUser(string username, string password)
         {
-            using (var context = new ProjectContext())
+            using (var context = new FigureManagementSystemContext())
             {
-                var user = context.TblUsers.FirstOrDefault(u =>
-                    (u.UserId.Equals(username) || u.Email.Equals(username)) &&
+                var user = context.Users.FirstOrDefault(u =>
+                    (u.Id.Equals(username) || u.Email.Equals(username)) &&
                     (u.IsActive == true));
 
                 if (user != null)

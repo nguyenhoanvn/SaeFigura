@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace FigureManagementSystem.Models;
 
-public partial class TblUser
+public partial class User
 {
-    public string UserId { get; set; } = null!;
+    public string Id { get; set; } = null!;
 
     public string FullName { get; set; } = null!;
 
@@ -21,9 +21,7 @@ public partial class TblUser
 
     public bool? IsActive { get; set; }
 
-    public virtual TblRole Role { get; set; } = null!;
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
-    public virtual ICollection<TblOrder> TblOrders { get; set; } = new List<TblOrder>();
-
-    public virtual ICollection<TblPayment> TblPayments { get; set; } = new List<TblPayment>();
+    public virtual Role Role { get; set; } = null!;
 }

@@ -16,18 +16,18 @@ namespace FigureManagementSystem.ViewModels
 {
     public class SeriesManagementViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<TblSeries> _seriesList = new();
-        private ObservableCollection<TblSeries> _filteredSeriesList = new();
+        private ObservableCollection<Series> _seriesList = new();
+        private ObservableCollection<Series> _filteredSeriesList = new();
         private readonly SeriesManagementWindow _window;
 
-        public ObservableCollection<TblSeries> SeriesList
+        public ObservableCollection<Series> SeriesList
         {
             get => _filteredSeriesList;
             set { _filteredSeriesList = value; OnPropertyChanged(nameof(SeriesList)); }
         }
 
-        private TblSeries? _selectedSeries;
-        public TblSeries? SelectedSeries
+        private Series? _selectedSeries;
+        public Series? SelectedSeries
         {
             get => _selectedSeries;
             set { _selectedSeries = value; OnPropertyChanged(nameof(SelectedSeries)); UpdateSelectionInfo(); }
@@ -60,19 +60,19 @@ namespace FigureManagementSystem.ViewModels
 
         public void LoadSeries()
         {
-            using var context = new ProjectContext();
-            _seriesList = new ObservableCollection<TblSeries>(context.TblSeries.ToList());
+            using var context = new FigureManagementSystemContext();
+            _seriesList = new ObservableCollection<Series>(context.Series.ToList());
             ApplyFilters();
         }
 
         public void ApplyFilters()
         {
-            IEnumerable<TblSeries> filtered = _seriesList;
+            IEnumerable<Series> filtered = _seriesList;
 
             // Search filter
             if (!string.IsNullOrWhiteSpace(SearchText))
             {
-                filtered = filtered.Where(s => s.SeriesName.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
+                filtered = filtered.Where(s => s.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase));
             }
 
             // Status filter
@@ -85,7 +85,7 @@ namespace FigureManagementSystem.ViewModels
                 filtered = filtered.Where(s => s.IsActive == false);
             }
 
-            SeriesList = new ObservableCollection<TblSeries>(filtered);
+            SeriesList = new ObservableCollection<Series>(filtered);
 
             // Empty state
             EmptyStateVisibility = SeriesList.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -126,30 +126,30 @@ namespace FigureManagementSystem.ViewModels
             }
             else
             {
-                SelectionInfo = $"Selected {SelectedSeries.SeriesName} (ID: {SelectedSeries.SeriesId})";
+                SelectionInfo = $"Selected {SelectedSeries.Name} (ID: {SelectedSeries.Id})";
             }
             OnPropertyChanged(nameof(SelectionInfo));
         }
 
         public void OnAddNew()
         {
-            var newSeries = new TblSeries
+            var newSeries = new Series
             {
                 IsActive = true
             };
 
             var fields = new List<Helpers.FieldDefinition>
             {
-                new Helpers.FieldDefinition {Label = "Series Name", PropertyName = nameof(TblSeries.SeriesName), Type = typeof(string)},
-                new Helpers.FieldDefinition {Label = "Is Active", PropertyName = nameof(TblSeries.SeriesName), Type = typeof(bool?)}
+                new Helpers.FieldDefinition {Label = "Series Name", PropertyName = nameof(Series.Name), Type = typeof(string)},
+                new Helpers.FieldDefinition {Label = "Is Active", PropertyName = nameof(Series.Name), Type = typeof(bool?)}
             };
 
             var editor = new EntityEditorWindow(newSeries, fields, "Add New Series") { Owner = Application.Current.MainWindow };
             if (editor.ShowDialog() == true && editor.IsSaved)
             {
-                using (var context = new ProjectContext())
+                using (var context = new FigureManagementSystemContext())
                 {
-                    context.TblSeries.Add(newSeries);
+                    context.Series.Add(newSeries);
                     context.SaveChanges();
                     LoadSeries();
                 }
@@ -160,37 +160,37 @@ namespace FigureManagementSystem.ViewModels
         {
             if (SelectedSeries == null) return;
 
-            var cloneSeries = new TblSeries
+            var cloneSeries = new Series
             {
-                SeriesId = SelectedSeries.SeriesId,
-                SeriesName = SelectedSeries.SeriesName,
-                TblCharacters = SelectedSeries.TblCharacters,
+                Id = SelectedSeries.Id,
+                Name = SelectedSeries.Name,
+                Characters = SelectedSeries.Characters,
                 IsActive = SelectedSeries.IsActive
             };
 
             var fields = new List<Helpers.FieldDefinition>
             {
-                new Helpers.FieldDefinition {Label = "Series Name", PropertyName = nameof(TblSeries.SeriesName), Type = typeof(string)},
-                new Helpers.FieldDefinition {Label = "Is Active", PropertyName = nameof(TblSeries.SeriesName), Type = typeof(bool?)}
+                new Helpers.FieldDefinition {Label = "Series Name", PropertyName = nameof(Series.Name), Type = typeof(string)},
+                new Helpers.FieldDefinition {Label = "Is Active", PropertyName = nameof(Series.Name), Type = typeof(bool?)}
             };
 
-            var editor = new EntityEditorWindow(cloneSeries, fields, $"Edit {SelectedSeries.SeriesName}") { Owner = Application.Current.MainWindow };
+            var editor = new EntityEditorWindow(cloneSeries, fields, $"Edit {SelectedSeries.Name}") { Owner = Application.Current.MainWindow };
             if (editor.ShowDialog() == true && editor.IsSaved)
             {
-                using (var context = new ProjectContext())
+                using (var context = new FigureManagementSystemContext())
                 {
-                    var seriesToUpdate = context.TblSeries.Include(s => s.TblCharacters).FirstOrDefault(s => s.SeriesId == cloneSeries.SeriesId);
+                    var seriesToUpdate = context.Series.Include(s => s.Characters).FirstOrDefault(s => s.Id == cloneSeries.Id);
                     if (seriesToUpdate != null)
                     {
-                        seriesToUpdate.SeriesName = cloneSeries.SeriesName;
+                        seriesToUpdate.Name = cloneSeries.Name;
                         seriesToUpdate.IsActive = cloneSeries.IsActive;
-                        seriesToUpdate.TblCharacters.Clear();
-                        foreach (var character in cloneSeries.TblCharacters)
+                        seriesToUpdate.Characters.Clear();
+                        foreach (var character in cloneSeries.Characters)
                         {
-                            var existingCharacter = context.TblCharacters.Find(character.CharacterId);
+                            var existingCharacter = context.Characters.Find(character.Id);
                             if (existingCharacter != null)
                             {
-                                seriesToUpdate.TblCharacters.Add(existingCharacter);
+                                seriesToUpdate.Characters.Add(existingCharacter);
                             }
                         }
                         context.SaveChanges();
@@ -203,16 +203,16 @@ namespace FigureManagementSystem.ViewModels
         public void OnDeleteSelected()
         {
             if (SelectedSeries == null) return;
-            var result = MessageBox.Show($"Are you sure you want to delete {SelectedSeries.SeriesName}?", "Confirm", MessageBoxButton.YesNo);
+            var result = MessageBox.Show($"Are you sure you want to delete {SelectedSeries.Name}?", "Confirm", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                using (var context = new ProjectContext())
+                using (var context = new FigureManagementSystemContext())
                 {
-                    var seriesToDelete = context.TblSeries.Include(s => s.TblCharacters).FirstOrDefault(s => s.SeriesId == SelectedSeries.SeriesId);
+                    var seriesToDelete = context.Series.Include(s => s.Characters).FirstOrDefault(s => s.Id == SelectedSeries.Id);
                     if (seriesToDelete != null)
                     {
-                        seriesToDelete.TblCharacters.Clear();
-                        context.TblSeries.Remove(seriesToDelete);
+                        seriesToDelete.Characters.Clear();
+                        context.Series.Remove(seriesToDelete);
                         context.SaveChanges();
                         LoadSeries();
                     }
@@ -223,9 +223,9 @@ namespace FigureManagementSystem.ViewModels
         public void OnToggleStatus()
         {
             if (SelectedSeries == null) return;
-            using (var context = new ProjectContext())
+            using (var context = new FigureManagementSystemContext())
             {
-                var series = context.TblSeries.FirstOrDefault(s => s.SeriesId == SelectedSeries.SeriesId);
+                var series = context.Series.FirstOrDefault(s => s.Id == SelectedSeries.Id);
                 if (series != null)
                 {
                     series.IsActive = !(series.IsActive ?? false);

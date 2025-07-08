@@ -21,97 +21,120 @@ namespace FigureManagementSystem.Views
     /// </summary>
     public partial class EntityEditorWindow : Window
     {
-        private object _entity;
-        private List<Helpers.FieldDefinition> _fields;
-        private Dictionary<string, Control> _inputs = new();
-        public bool IsSaved { get; set; } = false;
+        public object Entity { get; set; }
+        public List<Helpers.FieldDefinition> Fields { get; set; }
+        public bool IsSaved { get; set; }
         public string WindowTitle { get; set; }
         public string Purpose { get; set; }
-        public EntityEditorWindow(object entity, List<Helpers.FieldDefinition> fields, string title = "Edit Entity", string purpose = "Edit")
+        public bool HasLinkedEntities { get; set; }
+        public List<LinkedEntityDefinition> LinkedEntities { get; set; } = new();
+        public EntityEditorWindow(
+            object entity,
+            List<Helpers.FieldDefinition> fields,
+            string title = "Edit Entity",
+            string purpose = "Edit",
+            bool hasLinkedEntities = false,
+            List<LinkedEntityDefinition> linkedEntities = null)
         {
             InitializeComponent();
             DataContext = this;
-
-            _entity = entity;
-            _fields = fields;
+            Entity = entity;
+            Fields = fields;
             WindowTitle = title;
             Purpose = purpose;
+            HasLinkedEntities = hasLinkedEntities;
+            LinkedEntities = linkedEntities ?? new();
 
             BuildForm();
         }
 
-        public void BuildForm()
+        private void BuildForm()
         {
-            FormPanel.Children.Clear();
-            foreach (var field in _fields)
+            foreach (var field in Fields)
             {
-                var label = new TextBlock
-                {
-                    Text = field.Label,
-                    FontWeight = FontWeights.SemiBold,
-                    Margin = new Thickness(0, 0, 0, 2)
-                };
-                FormPanel.Children.Add(label);
-
+                var label = new Label { Content = field.Label };
                 Control input;
-                object? value = _entity.GetType().GetProperty(field.PropertyName)?.GetValue(_entity);
 
-                if (field.Type == typeof(bool) || field.Type == typeof(bool?))
+                if (field.Type == typeof(bool?) || field.Type == typeof(bool))
                 {
-                    input = new CheckBox
-                    {
-                        IsChecked = (bool?)(value ?? false),
-                        Margin = new Thickness(0, 0, 0, 10)
-                    };
+                    var checkBox = new CheckBox();
+                    var value = GetPropertyValue(field.PropertyName) as bool?;
+                    checkBox.IsChecked = value;
+                    checkBox.Checked += (_, __) => SetPropertyValue(field.PropertyName, true);
+                    checkBox.Unchecked += (_, __) => SetPropertyValue(field.PropertyName, false);
+                    input = checkBox;
                 }
                 else
                 {
-                    input = new TextBox
-                    {
-                        Text = value?.ToString() ?? "",
-                        Margin = new Thickness(0, 0, 0, 10)
-                    };
+                    var textBox = new TextBox();
+                    textBox.Text = GetPropertyValue(field.PropertyName)?.ToString() ?? "";
+                    textBox.TextChanged += (_, __) =>
+                        SetPropertyValue(field.PropertyName, Convert.ChangeType(textBox.Text, field.Type));
+
+                    if (field.PropertyName.ToLower().Contains("id") && Purpose == "Edit")
+                        textBox.IsEnabled = false;
+
+                    input = textBox;
                 }
 
-                _inputs[field.PropertyName] = input;
+                FormPanel.Children.Add(label);
                 FormPanel.Children.Add(input);
             }
-        }
 
-        private void Ok_Click(object sender, RoutedEventArgs e)
-        {
-            foreach (var field in _fields)
+            // Linked entities (ComboBoxes)
+            if (HasLinkedEntities)
             {
-                var prop = _entity.GetType().GetProperty(field.PropertyName);
-                if (prop == null) continue;
-                Control input = _inputs[field.PropertyName];
+                foreach (var linked in LinkedEntities)
+                {
+                    var label = new Label { Content = linked.Label };
+                    var comboBox = new ComboBox
+                    {
+                        ItemsSource = linked.ItemsSourceProvider(),
+                        DisplayMemberPath = "Name", 
+                        SelectedValuePath = "Id"    
+                    };
 
-                try
-                {
-                    if (field.Type == typeof(bool) || field.Type == typeof(bool?))
+                    var factory = new FrameworkElementFactory(typeof(TextBlock));
+                    factory.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding(".")
                     {
-                        prop.SetValue(_entity, ((CheckBox)input).IsChecked);
-                    }
-                    else if (field.Type == typeof(int))
+                        Converter = new DisplayConverter(linked.DisplayMemberSelector)
+                    });
+                    comboBox.ItemTemplate = new DataTemplate
                     {
-                        if (int.TryParse(((TextBox)input).Text, out int intValue)) {
-                            prop.SetValue(_entity, intValue);
-                        } else
+                        VisualTree = factory
+                    };
+
+                    var currentValue = GetPropertyValue(linked.PropertyName);
+                    comboBox.SelectedValue = currentValue;
+
+                    comboBox.SelectionChanged += (s, e) =>
+                    {
+                        var selected = comboBox.SelectedItem;
+                        if (selected != null)
                         {
-                            MessageBox.Show($"{field.Label} must be an integer");
-                            return;
+                            var idProp = selected.GetType().GetProperty("Id");
+                            if (idProp != null)
+                                SetPropertyValue(linked.PropertyName, idProp.GetValue(selected));
                         }
-                    } 
-                    else
-                    {
-                        prop.SetValue(_entity, ((TextBox)input).Text);
-                    }
-                } catch
-                {
-                    MessageBox.Show($"Invalid input for {field.Label}");
-                    return;
+                    };
+
+                    FormPanel.Children.Add(label);
+                    FormPanel.Children.Add(comboBox);
                 }
             }
+        }
+        private object? GetPropertyValue(string propName) =>
+            Entity.GetType().GetProperty(propName)?.GetValue(Entity);
+
+        private void SetPropertyValue(string propName, object? value)
+        {
+            var prop = Entity.GetType().GetProperty(propName);
+            if (prop != null && prop.CanWrite)
+                prop.SetValue(Entity, value);
+        }
+
+        private void Save_Click(object sender, RoutedEventArgs e)
+        {
             IsSaved = true;
             DialogResult = true;
             Close();
@@ -123,9 +146,5 @@ namespace FigureManagementSystem.Views
             DialogResult = false;
             Close();
         }
-
-        
-
-
     }
 }
