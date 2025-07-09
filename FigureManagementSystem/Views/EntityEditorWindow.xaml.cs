@@ -90,35 +90,18 @@ namespace FigureManagementSystem.Views
                     var comboBox = new ComboBox
                     {
                         ItemsSource = linked.ItemsSourceProvider(),
-                        DisplayMemberPath = "Name", 
-                        SelectedValuePath = "Id"    
+                        DisplayMemberPath = "Name",
+                        SelectedValuePath = "Id"
                     };
 
-                    var factory = new FrameworkElementFactory(typeof(TextBlock));
-                    factory.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding(".")
+                    comboBox.SetBinding(ComboBox.SelectedValueProperty, new Binding
                     {
-                        Converter = new DisplayConverter(linked.DisplayMemberSelector)
+                        Source = Entity,
+                        Path = new PropertyPath(linked.PropertyName),
+                        Mode = BindingMode.TwoWay
                     });
-                    comboBox.ItemTemplate = new DataTemplate
-                    {
-                        VisualTree = factory
-                    };
 
-                    var currentValue = GetPropertyValue(linked.PropertyName);
-                    comboBox.SelectedValue = currentValue;
-
-                    comboBox.SelectionChanged += (s, e) =>
-                    {
-                        var selected = comboBox.SelectedItem;
-                        if (selected != null)
-                        {
-                            var idProp = selected.GetType().GetProperty("Id");
-                            if (idProp != null)
-                                SetPropertyValue(linked.PropertyName, idProp.GetValue(selected));
-                        }
-                    };
-
-                    FormPanel.Children.Add(label);
+                    FormPanel.Children.Add(new Label { Content = linked.Label });
                     FormPanel.Children.Add(comboBox);
                 }
             }

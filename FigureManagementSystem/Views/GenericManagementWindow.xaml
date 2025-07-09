@@ -9,6 +9,7 @@
         mc:Ignorable="d"
         Title="{Binding WindowTitle}" Height="540" Width="960">
     <helpers:FullScreenWindow.Resources>
+        <helpers:LinkedEntitySourceConverter x:Key="LinkedEntitySourceConverter"/>
         <!-- Button Styles -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="7"/>
@@ -152,6 +153,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
@@ -244,9 +246,45 @@
                     Background="#17A2B8"/>
             </Grid>
         </Border>
+        
+
+        <Border Grid.Row="2" 
+            Background="White" 
+            Padding="20,15" 
+            BorderBrush="#DEE2E6" 
+            BorderThickness="0,0,0,1">
+            <ItemsControl Grid.Column="2"
+              ItemsSource="{Binding FilterItems}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,5">
+                            <TextBlock Text="{Binding Label}" 
+                           FontSize="14" 
+                           FontWeight="SemiBold" 
+                           Margin="0,0,10,0"
+                           VerticalAlignment="Center"/>
+                            <ComboBox Width="200"
+                                      Height="20"
+          DisplayMemberPath="Name"
+          SelectedValuePath="Id"
+          SelectedValue="{Binding SelectedFilterValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <ComboBox.ItemsSource>
+                                    <MultiBinding Converter="{StaticResource LinkedEntitySourceConverter}">
+                                        <Binding Path="DataContext.LinkedEntitySources" RelativeSource="{RelativeSource AncestorType=Window}" />
+                                        <Binding Path="PropertyName" />
+                                    </MultiBinding>
+                                </ComboBox.ItemsSource>
+                            </ComboBox>
+
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </Border>
 
         <!-- Data Grid Section -->
-        <Border Grid.Row="2" 
+        <Border Grid.Row="3" 
             Background="White" 
             Margin="20,10,20,10" 
             CornerRadius="8"
@@ -286,7 +324,7 @@
         </Border>
 
         <!-- Action Buttons Section -->
-        <Border Grid.Row="3" 
+        <Border Grid.Row="4" 
             Background="White" 
             Padding="20,15" 
             BorderBrush="#DEE2E6" 
@@ -343,6 +381,6 @@
                 </StackPanel>
             </Grid>
         </Border>
-        <fragments:FooterControl Grid.Row="4"/>
+        <fragments:FooterControl Grid.Row="5"/>
     </Grid>
 </helpers:FullScreenWindow>

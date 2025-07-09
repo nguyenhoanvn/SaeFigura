@@ -162,39 +162,30 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Material Management Card -->
+
+                <!-- Role Management Card -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="📁 Material Management" 
-                                  Style="{StaticResource HeaderStyle}"/>
-                        <TextBlock Text="Manage media files, assets, documents and other materials associated with your content library."
-                                  Style="{StaticResource DescriptionStyle}"/>
-                        <Button x:Name="btnMaterial"
-                                Content="Manage Material"
-                                Style="{StaticResource NavigationButtonStyle}"/>
+                        <TextBlock Text="📂 Role Management" 
+                  Style="{StaticResource HeaderStyle}"/>
+                        <TextBlock Text="Organize content into categories and subcategories. Manage genre classifications and content organization."
+                  Style="{StaticResource DescriptionStyle}"/>
+                        <Button x:Name="btnRoles"
+                Content="Manage Roles"
+                Style="{StaticResource NavigationButtonStyle}"/>
                     </StackPanel>
                 </Border>
 
-                <!-- Quick Actions Card -->
+                <!-- Users Management Card -->
                 <Border Style="{StaticResource CardStyle}">
                     <StackPanel>
-                        <TextBlock Text="⚡ Quick Actions" 
-                                  Style="{StaticResource HeaderStyle}"/>
-                        <TextBlock Text="Access frequently used functions and system-wide operations like imports, exports, and bulk operations."
-                                  Style="{StaticResource DescriptionStyle}"/>
-                        <StackPanel Orientation="Horizontal" 
-                                   HorizontalAlignment="Center">
-                            <Button x:Name="btnImport"
-                                    Content="Import Data"
-                                    Style="{StaticResource NavigationButtonStyle}"
-                                    Background="#27AE60"
-                                    Margin="5"/>
-                            <Button x:Name="btnExport"
-                                    Content="Export Data"
-                                    Style="{StaticResource NavigationButtonStyle}"
-                                    Background="#E67E22"
-                                    Margin="5"/>
-                        </StackPanel>
+                        <TextBlock Text="📂 Users Management" 
+                  Style="{StaticResource HeaderStyle}"/>
+                        <TextBlock Text="Organize content into categories and subcategories. Manage genre classifications and content organization."
+                  Style="{StaticResource DescriptionStyle}"/>
+                        <Button x:Name="btnUsers"
+                Content="Manage Users"
+                Style="{StaticResource NavigationButtonStyle}"/>
                     </StackPanel>
                 </Border>
 

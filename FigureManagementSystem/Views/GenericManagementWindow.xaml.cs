@@ -37,6 +37,18 @@ namespace FigureManagementSystem.Views
             {
                 e.Cancel = true;
             }
+
+            if (DataContext is IGenericForeignKeyProvider viewModel)
+            {
+                if (viewModel.ForeignKeyMappings.TryGetValue(e.PropertyName, out var mapping))
+                {
+                    var binding = new Binding(e.PropertyName)
+                    {
+                        Converter = new GenericForeignKeyConverter(mapping.EntityType, mapping.DisplayProperty)
+                    };
+                    ((DataGridTextColumn)e.Column).Binding = binding;
+                }
+            }
         }
     }
 }

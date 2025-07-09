@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace FigureManagementSystem.ViewModels
 {
-    public class GenericManagementViewModel<TEntity> : INotifyPropertyChanged where TEntity : class, new()
+    public class GenericManagementViewModel<TEntity> : INotifyPropertyChanged, IGenericForeignKeyProvider where TEntity : class, new()
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public Action? CloseAction { get; set; }
@@ -21,6 +21,24 @@ namespace FigureManagementSystem.ViewModels
         public ObservableCollection<TEntity> Entities { get; set; } = new();
         public ObservableCollection<TEntity> FilteredEntities { get; set; } = new();
         public ObservableCollection<string> StatusOptions { get; } = new ObservableCollection<string> { "All", "Active", "Inactive" };
+        private List<LinkedEntityDefinition>? _linkedEntities;
+        public List<LinkedEntityDefinition>? LinkedEntities {
+            get => _linkedEntities;
+            set
+            {
+                _linkedEntities = value;
+                InitializeFilters();
+            }
+        }
+        public Dictionary<string, ForeignKeyMapping> ForeignKeyMappings { get; } = new();
+        public Dictionary<string, IEnumerable<object>> LinkedEntitySources
+            => LinkedEntities?.ToDictionary(
+                x => x.PropertyName,
+                x => x.ItemsSourceProvider.Invoke()) ?? new();
+        public Dictionary<string, object?> SelectedFilters { get; set; } = new();
+        public ObservableCollection<FilterItem> FilterItems { get; } = new();
+
+
         public TEntity? SelectedEntity { get; set; }
         public string _searchText = "";
         public string SearchText
@@ -101,7 +119,18 @@ namespace FigureManagementSystem.ViewModels
             {
                 SearchText = "";
             });
-            RefreshCommand = new RelayCommand(_ => LoadEntities());
+
+            RefreshCommand = new RelayCommand(_ =>
+            {
+                LoadEntities();
+
+                foreach (var filterItem in FilterItems)
+                {
+                    filterItem.SelectedFilterValue = null;
+                }
+
+                ApplyFilters();
+            });
             AddNewCommand = new RelayCommand(_ => OnAddNew());
             EditSelectedCommand = new RelayCommand(_ => OnEditSelected());
             DeleteSelectedCommand = new RelayCommand(_ => OnDeleteSelected());
@@ -144,6 +173,19 @@ namespace FigureManagementSystem.ViewModels
                 });
             }
 
+            foreach (var filter in SelectedFilters)
+            {
+                var prop = typeof(TEntity).GetProperty(filter.Key);
+                if (prop != null && filter.Value != null)
+                {
+                    filtered = filtered.Where(e =>
+                    {
+                        var entityValue = prop.GetValue(e);
+                        return Equals(entityValue, filter.Value);
+                    });
+                }
+            }
+
             FilteredEntities = new ObservableCollection<TEntity>(filtered);
 
             EmptyStateVisibility = FilteredEntities.Count() == 0 ? Visibility.Visible : Visibility.Collapsed;
@@ -153,10 +195,40 @@ namespace FigureManagementSystem.ViewModels
             OnPropertyChanged(nameof(EmptyStateVisibility));
         }
 
+        private void InitializeFilters()
+        {
+            if (LinkedEntities != null)
+            {
+                foreach (var linked in LinkedEntities)
+                {
+                    var filterItem = new FilterItem
+                    {
+                        PropertyName = linked.PropertyName,
+                        Label = linked.Label,
+                        SelectedFilterValue = SelectedFilters.ContainsKey(linked.PropertyName) ? SelectedFilters[linked.PropertyName] : null
+                    };
+
+                    filterItem.PropertyChanged += (_, __) =>
+                    {
+                        SelectedFilters[filterItem.PropertyName] = filterItem.SelectedFilterValue;
+                        ApplyFilters();
+                    };
+
+                    FilterItems.Add(filterItem);
+                }
+            }
+        }
+
         public void OnAddNew()
         {
             var newEntity = new TEntity();
-            var editor = new EntityEditorWindow(newEntity, _fieldDefinitions, $"Add New {_entityName}", "Add", false, null)
+            var editor = new EntityEditorWindow(
+                newEntity,
+                _fieldDefinitions,
+                $"Add New {_entityName}",
+                "Add",
+                hasLinkedEntities: LinkedEntities != null && LinkedEntities.Any(),
+                linkedEntities: LinkedEntities)
             {
                 Owner = _ownerWindow
             };
@@ -179,17 +251,15 @@ namespace FigureManagementSystem.ViewModels
                 return;
             }
             var clone = new TEntity();
-            foreach (var field in _fieldDefinitions)
-            {
-                var prop = typeof(TEntity).GetProperty(field.PropertyName);
-                if (prop != null)
-                {
-                    var value = prop.GetValue(SelectedEntity);
-                    prop.SetValue(clone, value);
-                }
-            }
+            CopyEntityProperties(SelectedEntity, clone);
 
-            var editor = new EntityEditorWindow(clone, _fieldDefinitions, $"Edit {_displayNameSelector(SelectedEntity)}", "Edit")
+            var editor = new EntityEditorWindow(
+                clone,
+                _fieldDefinitions,
+                $"Edit {_displayNameSelector(SelectedEntity)}",
+                "Edit", 
+                hasLinkedEntities: LinkedEntities != null && LinkedEntities.Any(),
+                linkedEntities: LinkedEntities)
             {
                 Owner = _ownerWindow
             };
@@ -199,15 +269,7 @@ namespace FigureManagementSystem.ViewModels
                 var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
                 if (entity != null)
                 {
-                    foreach (var field in _fieldDefinitions)
-                    {
-                        var prop = typeof(TEntity).GetProperty(field.PropertyName);
-                        if (prop != null)
-                        {
-                            var value = prop.GetValue(clone);
-                            prop.SetValue(entity, value);
-                        } 
-                    }
+                    CopyEntityProperties(clone, entity);
                     context.SaveChanges();
                     LoadEntities();
                 }
@@ -247,6 +309,32 @@ namespace FigureManagementSystem.ViewModels
                 _toggleStatusAction(entity);
                 context.SaveChanges();
                 LoadEntities();
+            }
+        }
+
+        private void CopyEntityProperties(TEntity source, TEntity target)
+        {
+            foreach (var field in _fieldDefinitions)
+            {
+                var prop = typeof(TEntity).GetProperty(field.PropertyName);
+                if (prop != null)
+                {
+                    var value = prop.GetValue(source);
+                    prop.SetValue(target, value);
+                }
+            }
+
+            if (LinkedEntities != null)
+            {
+                foreach (var linked in LinkedEntities)
+                {
+                    var prop = typeof(TEntity).GetProperty(linked.PropertyName);
+                    if (prop != null)
+                    {
+                        var value = prop.GetValue(source);
+                        prop.SetValue(target, value);
+                    }
+                }
             }
         }
 
