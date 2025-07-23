@@ -13,7 +13,7 @@ using System.Windows.Input;
 
 namespace FigureManagementSystem.ViewModels
 {
-    public class GenericManagementViewModel<TEntity> : INotifyPropertyChanged, IGenericForeignKeyProvider where TEntity : class, new()
+    public class GenericManagementViewModel<TEntity, TKey> : INotifyPropertyChanged, IGenericForeignKeyProvider where TEntity : class, new()
     {
         public event PropertyChangedEventHandler? PropertyChanged;
         public Action? CloseAction { get; set; }
@@ -74,11 +74,12 @@ namespace FigureManagementSystem.ViewModels
         public string WindowSubtitle { get; set; } = "";
         public string EmptyStateTitle => $"No {_entityName} found";
         public string EmptyStateSubtitle => $"Click 'Add New {_entityName}' to get started";
+        public bool HasSearch => _searchPredicate != null;
         public Visibility EmptyStateVisibility { get; set; } = Visibility.Collapsed;
         
-        private readonly Func<TEntity, int> _idSelector;
+        private readonly Func<TEntity, TKey> _idSelector;
         private readonly Func<TEntity, string> _displayNameSelector;
-        private readonly Func<TEntity, string, bool> _searchPredicate;
+        private readonly Func<TEntity, string, bool>? _searchPredicate = null;
         private readonly Action<TEntity> _toggleStatusAction;
         private readonly List<Helpers.FieldDefinition> _fieldDefinitions;
         private readonly string _entityName;
@@ -97,11 +98,11 @@ namespace FigureManagementSystem.ViewModels
         public GenericManagementViewModel (
             Window ownerWindow,
             string entityName,
-            Func<TEntity, int> idSelector,
+            Func<TEntity, TKey> idSelector,
             Func<TEntity, string> displayNameSelector,
-            Func<TEntity, string, bool> searchPredicate,
             Action<TEntity> toggleStatusAction,
-            List<Helpers.FieldDefinition> fieldDefinitions)
+            List<Helpers.FieldDefinition> fieldDefinitions,
+            Func<TEntity, string, bool>? searchPredicate = null)
         {
             _ownerWindow = ownerWindow;
             _entityName = entityName;
@@ -151,9 +152,9 @@ namespace FigureManagementSystem.ViewModels
         {
             IEnumerable<TEntity> filtered = Entities;
 
-            if (!string.IsNullOrWhiteSpace(SearchText))
+            if (!string.IsNullOrWhiteSpace(SearchText) && _searchPredicate != null)
             {
-                filtered = filtered.Where(e => _searchPredicate(e, SearchText));
+                filtered = filtered.Where(entity => _searchPredicate(entity, SearchText));
             }
 
             if (SelectedStatus == "Active")
@@ -205,6 +206,7 @@ namespace FigureManagementSystem.ViewModels
                     {
                         PropertyName = linked.PropertyName,
                         Label = linked.Label,
+                        DisplayMemberPath = linked.DisplayMemberPath,
                         SelectedFilterValue = SelectedFilters.ContainsKey(linked.PropertyName) ? SelectedFilters[linked.PropertyName] : null
                     };
 

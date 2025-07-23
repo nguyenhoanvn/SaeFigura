@@ -14,6 +14,9 @@
     <Compile Update="Views\LoginWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\ManagerBusinessWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\MasterDataWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -11,6 +11,7 @@ namespace FigureManagementSystem.Helpers
     {
         public string PropertyName { get; set; } = "";
         public string Label { get; set; } = "";
+        public string DisplayMemberPath { get; set; } = "Name";
         private object? _selectedFilterValue;
         public object? SelectedFilterValue
         {

@@ -10,6 +10,7 @@
         Title="{Binding WindowTitle}" Height="540" Width="960">
     <helpers:FullScreenWindow.Resources>
         <helpers:LinkedEntitySourceConverter x:Key="LinkedEntitySourceConverter"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
         <!-- Button Styles -->
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="7"/>
@@ -203,22 +204,26 @@
                 <StackPanel Grid.Column="0" 
                        Orientation="Horizontal" 
                        VerticalAlignment="Center">
+                    <StackPanel Orientation="Horizontal"
+                    Visibility="{Binding HasSearch, Converter={StaticResource BoolToVis}}">
                     <TextBlock Text="Search:" 
                           FontSize="14" 
                           FontWeight="SemiBold" 
                           Margin="0,0,10,0" 
                           VerticalAlignment="Center"/>
-                    <TextBox Name="txtSearch"
-                             Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
-                         Width="300"
-                         Style="{StaticResource ModernTextBoxStyle}"
-                         Tag="Search by series name..."/>
-                    <Button x:Name="btnClearSearch"
-                        Content="Clear"
-                        Command="{Binding ClearSearchCommand}"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Background="#6C757D"
-                        Margin="10,0,0,0"/>
+                    
+                                <TextBox Name="txtSearch"
+                     Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                     Width="300"
+                     Style="{StaticResource ModernTextBoxStyle}"
+                     Tag="Search by series name..."/>
+                                <Button x:Name="btnClearSearch"
+                    Content="Clear"
+                    Command="{Binding ClearSearchCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Background="#6C757D"
+                    Margin="10,0,0,0"/>
+                    </StackPanel>
                 </StackPanel>
 
                 <StackPanel Grid.Column="1" 
@@ -265,7 +270,7 @@
                            VerticalAlignment="Center"/>
                             <ComboBox Width="200"
                                       Height="20"
-          DisplayMemberPath="Name"
+          DisplayMemberPath="{Binding DisplayMemberPath}"
           SelectedValuePath="Id"
           SelectedValue="{Binding SelectedFilterValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                 <ComboBox.ItemsSource>

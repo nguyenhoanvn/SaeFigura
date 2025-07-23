@@ -10,6 +10,7 @@ namespace FigureManagementSystem.Helpers
     {
         public string Label { get; set; } = "";
         public string PropertyName { get; set; } = ""; 
+        public string DisplayMemberPath { get; set; } = "Name";
         public Type LinkedEntityType { get; set; }     
         public Func<IEnumerable<object>> ItemsSourceProvider { get; set; } = () => Enumerable.Empty<object>();
         public Func<object, string> DisplayMemberSelector { get; set; } = obj => obj.ToString()!;

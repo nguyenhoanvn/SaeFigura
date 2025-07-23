@@ -143,9 +143,6 @@ public partial class FigureManagementSystemContext : DbContext
             entity.ToTable("Payment");
 
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
-            entity.Property(e => e.Currency)
-                .HasMaxLength(3)
-                .HasDefaultValue("VND");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Method).HasMaxLength(20);
             entity.Property(e => e.PaymentDate).HasDefaultValueSql("(getdate())");

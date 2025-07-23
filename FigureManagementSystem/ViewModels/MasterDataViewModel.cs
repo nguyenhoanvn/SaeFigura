@@ -22,12 +22,11 @@ namespace FigureManagementSystem.ViewModels
             _window.btnBrands.Click += BtnBrands_Click;
             _window.btnCategories.Click += BtnCategories_Click;
             _window.btnRoles.Click += BtnRoles_Click;
-            _window.btnUsers.Click += BtnUsers_Click;
         }
 
         private void BtnSeries_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new GenericManagementViewModel<Series>(
+            var viewModel = new GenericManagementViewModel<Series, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "Series",
                 idSelector: s => s.Id,
@@ -47,7 +46,8 @@ namespace FigureManagementSystem.ViewModels
             var window = new GenericManagementWindow
             {
                 DataContext = viewModel,
-                Owner = _window 
+                Owner = _window,
+                ShowInTaskbar = false
             };
 
             viewModel.CloseAction = () =>
@@ -63,7 +63,7 @@ namespace FigureManagementSystem.ViewModels
         {
             var seriesList = new FigureManagementSystemContext().Series.ToList();
 
-            var viewModel = new GenericManagementViewModel<Character>(
+            var viewModel = new GenericManagementViewModel<Character, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "Characters",
                 idSelector: c => c.Id,
@@ -115,7 +115,7 @@ namespace FigureManagementSystem.ViewModels
 
         private void BtnBrands_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new GenericManagementViewModel<Brand>(
+            var viewModel = new GenericManagementViewModel<Brand, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "Brands",
                 idSelector: b => b.Id,
@@ -151,7 +151,7 @@ namespace FigureManagementSystem.ViewModels
 
         private void BtnCategories_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new GenericManagementViewModel<Category>(
+            var viewModel = new GenericManagementViewModel<Category, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "Categories",
                 idSelector: ct => ct.Id,
@@ -186,7 +186,7 @@ namespace FigureManagementSystem.ViewModels
 
         private void BtnRoles_Click(object sender, RoutedEventArgs e)
         {
-            var viewModel = new GenericManagementViewModel<Role>(
+            var viewModel = new GenericManagementViewModel<Role, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "Roles",
                 idSelector: r => r.Id,
@@ -202,57 +202,6 @@ namespace FigureManagementSystem.ViewModels
             );
             viewModel.WindowTitle = "Roles Management Window";
             viewModel.WindowSubtitle = "Manage your Roles in database";
-
-            var window = new GenericManagementWindow
-            {
-                DataContext = viewModel,
-                Owner = _window
-            };
-
-            viewModel.CloseAction = () =>
-            {
-                window.DialogResult = true;
-                window.Close();
-            };
-
-            window.ShowDialog();
-        }
-
-        private void BtnUsers_Click(object sender, RoutedEventArgs e)
-        {
-            var rolesList = new FigureManagementSystemContext().Users.ToList();
-            var viewModel = new GenericManagementViewModel<Role>(
-                ownerWindow: Application.Current.MainWindow,
-                entityName: "Roles",
-                idSelector: r => r.Id,
-                displayNameSelector: r => r.Name,
-                searchPredicate: (r, text) => r.Name.Contains(text, StringComparison.OrdinalIgnoreCase),
-                toggleStatusAction: r => r.IsActive = !(r.IsActive ?? false),
-                fieldDefinitions: new List<Helpers.FieldDefinition>
-                {
-                    new() {Label = "Name", PropertyName = nameof(Role.Name), Type = typeof(string)},
-                    new() {Label = "IsActive", PropertyName = nameof(Role.IsActive), Type = typeof(bool?)},
-                }
-
-            );
-            viewModel.WindowTitle = "Roles Management Window";
-            viewModel.WindowSubtitle = "Manage your Roles in database";
-            viewModel.LinkedEntities = new List<LinkedEntityDefinition>
-            {
-                new()
-                {
-                    Label = "Roles",
-                    PropertyName = nameof(User.RoleId),
-                    LinkedEntityType = typeof(Role),
-                    ItemsSourceProvider = () => rolesList,
-                    DisplayMemberSelector = r => ((Role)r).Name
-                }
-            };
-            viewModel.ForeignKeyMappings["Role Id"] = new ForeignKeyMapping
-            {
-                EntityType = typeof(Role),
-                DisplayProperty = "Name"
-            };
 
             var window = new GenericManagementWindow
             {
