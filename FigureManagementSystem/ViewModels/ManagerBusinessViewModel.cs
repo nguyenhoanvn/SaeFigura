@@ -186,7 +186,7 @@ namespace FigureManagementSystem.ViewModels
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
                     new() {Label = "OrderId", PropertyName = nameof(OrderDetail.OrderId), Type = typeof(int)},
-                    new() {Label = "ProductId", PropertyName = nameof(OrderDetail.ProductId), Type = typeof(int)},
+                    new() {Label = "ProductId", PropertyName = nameof(OrderDetail.ProductName), Type = typeof(int)},
                     new() {Label = "Price", PropertyName = nameof(OrderDetail.Price), Type = typeof(decimal)},
                     new() {Label = "Quantity", PropertyName = nameof(OrderDetail.Quantity), Type = typeof(int)},
                     new() {Label = "IsActive", PropertyName = nameof(OrderDetail.IsActive), Type = typeof(bool?)},

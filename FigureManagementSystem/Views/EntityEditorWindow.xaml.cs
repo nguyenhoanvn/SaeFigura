@@ -90,7 +90,7 @@ namespace FigureManagementSystem.Views
                     var comboBox = new ComboBox
                     {
                         ItemsSource = linked.ItemsSourceProvider(),
-                        DisplayMemberPath = "Name",
+                        DisplayMemberPath = linked.DisplayMemberPath,
                         SelectedValuePath = "Id"
                     };
 

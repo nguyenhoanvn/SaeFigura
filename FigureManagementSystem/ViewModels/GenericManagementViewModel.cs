@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using FigureManagementSystem.Helpers;
 using System.Windows;
 using System.Windows.Input;
+using Microsoft.Data.SqlClient;
 
 namespace FigureManagementSystem.ViewModels
 {
@@ -141,10 +142,19 @@ namespace FigureManagementSystem.ViewModels
         }
         public void LoadEntities()
         {
-            using (var context = new FigureManagementSystemContext())
+            try
             {
+                using var context = new FigureManagementSystemContext();
                 Entities = new ObservableCollection<TEntity>(context.Set<TEntity>().ToList());
                 ApplyFilters();
+            }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("Database error occurred while loading data:\n" + sqlEx.Message, "SQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An unexpected error occurred:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -237,21 +247,28 @@ namespace FigureManagementSystem.ViewModels
 
             if (editor.ShowDialog() == true && editor.IsSaved)
             {
-                using (var context = new FigureManagementSystemContext())
+                try
                 {
+                    using var context = new FigureManagementSystemContext();
                     context.Set<TEntity>().Add(newEntity);
                     context.SaveChanges();
                     LoadEntities();
+                }
+                catch (SqlException sqlEx)
+                {
+                    MessageBox.Show("Failed to add the entity due to a database error:\n" + sqlEx.Message, "SQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An unexpected error occurred while adding the entity:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
 
         public void OnEditSelected()
         {
-            if (SelectedEntity == null)
-            {
-                return;
-            }
+            if (SelectedEntity == null) return;
+
             var clone = new TEntity();
             CopyEntityProperties(SelectedEntity, clone);
 
@@ -259,60 +276,94 @@ namespace FigureManagementSystem.ViewModels
                 clone,
                 _fieldDefinitions,
                 $"Edit {_displayNameSelector(SelectedEntity)}",
-                "Edit", 
+                "Edit",
                 hasLinkedEntities: LinkedEntities != null && LinkedEntities.Any(),
                 linkedEntities: LinkedEntities)
             {
                 Owner = _ownerWindow
             };
+
             if (editor.ShowDialog() == true && editor.IsSaved)
             {
-                using var context = new FigureManagementSystemContext();
-                var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
-                if (entity != null)
+                try
                 {
-                    CopyEntityProperties(clone, entity);
-                    context.SaveChanges();
-                    LoadEntities();
+                    using var context = new FigureManagementSystemContext();
+                    var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
+                    if (entity != null)
+                    {
+                        CopyEntityProperties(clone, entity);
+                        context.SaveChanges();
+                        LoadEntities();
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    MessageBox.Show("Failed to edit the entity due to a database error:\n" + sqlEx.Message, "SQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An unexpected error occurred while editing the entity:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
+
 
         public void OnDeleteSelected()
         {
-            if (SelectedEntity == null)
-            {
-                return;
-            }
+            if (SelectedEntity == null) return;
+
             var result = MessageBox.Show($"Delete {_displayNameSelector(SelectedEntity)}?", "Confirm", MessageBoxButton.YesNo);
+
             if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    using var context = new FigureManagementSystemContext();
+                    var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
+                    if (entity != null)
+                    {
+                        context.Set<TEntity>().Remove(entity);
+                        context.SaveChanges();
+                        LoadEntities();
+                    }
+                }
+                catch (SqlException sqlEx)
+                {
+                    MessageBox.Show("Failed to delete the entity due to a database error:\n" + sqlEx.Message, "SQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("An unexpected error occurred while deleting the entity:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+
+        public void OnToggleStatus()
+        {
+            if (SelectedEntity == null) return;
+
+            try
             {
                 using var context = new FigureManagementSystemContext();
                 var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
                 if (entity != null)
                 {
-                    context.Set<TEntity>().Remove(entity);
+                    _toggleStatusAction(entity);
                     context.SaveChanges();
                     LoadEntities();
                 }
             }
+            catch (SqlException sqlEx)
+            {
+                MessageBox.Show("Failed to update status due to a database error:\n" + sqlEx.Message, "SQL Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("An unexpected error occurred while toggling status:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
-        public void OnToggleStatus()
-        {
-            if (SelectedEntity == null)
-            {
-                return;
-            }
-            using var context = new FigureManagementSystemContext();
-            var entity = context.Set<TEntity>().Find(_idSelector(SelectedEntity));
-            if (entity != null)
-            {
-                _toggleStatusAction(entity);
-                context.SaveChanges();
-                LoadEntities();
-            }
-        }
 
         private void CopyEntityProperties(TEntity source, TEntity target)
         {

@@ -1,4 +1,5 @@
 ﻿using FigureManagementSystem.Helpers;
+using FigureManagementSystem.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,18 @@ namespace FigureManagementSystem.Views
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
+            if (e.PropertyName == nameof(OrderDetail.ProductName))
+            {
+                e.Cancel = true;
+                return;
+            }
+
+            if (e.PropertyName == nameof(OrderDetail.ProductId))
+            {
+                e.Column.Header = "Product Name";
+            }
+
+
             var propertyType = e.PropertyType;
 
             if (typeof(System.Collections.IEnumerable).IsAssignableFrom(propertyType) && propertyType != typeof(string))
