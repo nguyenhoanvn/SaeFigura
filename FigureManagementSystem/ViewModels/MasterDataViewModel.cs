@@ -75,7 +75,6 @@ namespace FigureManagementSystem.ViewModels
                     new() {Label = "Name", PropertyName = nameof(Character.Name), Type = typeof(string)},
                     new() {Label = "Main Color", PropertyName = nameof(Character.MainColor), Type = typeof(string)},
                     new() {Label = "IsActive", PropertyName = nameof(Character.IsActive), Type = typeof(bool?)},
-                    new() {Label = "SeriesId", PropertyName = nameof(Character.SeriesId), Type = typeof(int) },
                 }
             );
             viewModel.WindowTitle = "Characters Management Window";
@@ -161,7 +160,7 @@ namespace FigureManagementSystem.ViewModels
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
                     new() {Label = "Name", PropertyName = nameof(Category.Name), Type = typeof(string)},
-                    new() {Label = "Average Rating", PropertyName = nameof(Category.Description), Type = typeof(string)},
+                    new() {Label = "Average Rating", PropertyName = nameof(Category.Description), Type = typeof(decimal?)},
                     new() {Label = "IsActive", PropertyName = nameof(Category.IsActive), Type = typeof(bool?)},
                 }
             );

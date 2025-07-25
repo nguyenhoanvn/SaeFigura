@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using FigureManagementSystem.Helpers;
 using Microsoft.EntityFrameworkCore;
 
 namespace FigureManagementSystem.Models;
@@ -86,11 +87,11 @@ public partial class FigureManagementSystemContext : DbContext
             entity.HasKey(e => e.Id).HasName("PK__Discount__3214EC07C64DA4DF");
 
             entity.ToTable("Discount");
-
+            entity.Property(d => d.Type).HasConversion<string>();
             entity.Property(e => e.Id).HasMaxLength(10);
             entity.Property(e => e.IsActive).HasDefaultValue(true);
             entity.Property(e => e.Name).HasMaxLength(255);
-            entity.Property(e => e.Type).HasMaxLength(10);
+            entity.Property(d => d.Type).HasConversion<string>();
             entity.Property(e => e.Value).HasColumnType("decimal(5, 2)");
         });
 
@@ -144,9 +145,14 @@ public partial class FigureManagementSystemContext : DbContext
 
             entity.Property(e => e.Amount).HasColumnType("decimal(10, 2)");
             entity.Property(e => e.IsActive).HasDefaultValue(true);
-            entity.Property(e => e.Method).HasMaxLength(20);
+            entity.Property(p => p.Method).HasConversion(
+                            v => EnumHelper.GetEnumMemberValue(v),
+                            v => EnumHelper.GetEnumFromValue<PaymentMethod>(v)
+                        )
+                        .HasMaxLength(20)
+                        .IsRequired();
             entity.Property(e => e.PaymentDate).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.Status).HasMaxLength(20);
+            entity.Property(p => p.Status).HasConversion<string>();
 
             entity.HasOne(d => d.Order).WithMany(p => p.Payments)
                 .HasForeignKey(d => d.OrderId)

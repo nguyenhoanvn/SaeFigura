@@ -45,6 +45,10 @@ namespace FigureManagementSystem.Views
             HasLinkedEntities = hasLinkedEntities;
             LinkedEntities = linkedEntities ?? new();
 
+            WindowStyle = WindowStyle.SingleBorderWindow;
+            ResizeMode = ResizeMode.NoResize;
+            ShowInTaskbar = false;
+
             BuildForm();
         }
 
@@ -64,15 +68,132 @@ namespace FigureManagementSystem.Views
                     checkBox.Unchecked += (_, __) => SetPropertyValue(field.PropertyName, false);
                     input = checkBox;
                 }
+                else if (field.Type.IsEnum)
+                {
+                    var comboBox = new ComboBox
+                    {
+                        ItemsSource = Enum.GetValues(field.Type),
+                        SelectedItem = GetPropertyValue(field.PropertyName)
+                    };
+
+                    var binding = new Binding(field.PropertyName)
+                    {
+                        Source = Entity,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged
+                    };
+                    comboBox.SetBinding(ComboBox.SelectedItemProperty, binding);
+
+                    input = comboBox;
+                }
+                else if (field.Type == typeof(int) || field.Type == typeof(int?))
+                {
+                    var textBox = new TextBox();
+                    var binding = new Binding(field.PropertyName)
+                    {
+                        Source = Entity,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                        ValidatesOnDataErrors = true,
+                        NotifyOnValidationError = true,
+                        Converter = new IntConverter() 
+                    };
+                    textBox.SetBinding(TextBox.TextProperty, binding);
+
+                    textBox.PreviewTextInput += (s, e) => e.Handled = !IsTextInteger(e.Text);
+                    DataObject.AddPastingHandler(textBox, (s, e) =>
+                    {
+                        if (e.DataObject.GetDataPresent(DataFormats.Text))
+                        {
+                            string text = (string)e.DataObject.GetData(DataFormats.Text);
+                            if (!IsTextInteger(text))
+                                e.CancelCommand();
+                        }
+                    });
+
+                    if ((field.PropertyName.Equals("Id", StringComparison.OrdinalIgnoreCase)
+                    || field.PropertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
+                    && Purpose == "Edit")
+                        textBox.IsReadOnly = false;
+
+                    if (field.IsReadOnly)
+                    {
+                        textBox.IsReadOnly = true;
+                        textBox.Background = Brushes.LightGray; // optional
+                    }
+                    input = textBox;
+
+                }
+                else if (field.Type == typeof(decimal) || field.Type == typeof(decimal?))
+                {
+                    var textBox = new TextBox();
+                    var binding = new Binding(field.PropertyName)
+                    {
+                        Source = Entity,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                        ValidatesOnDataErrors = true,
+                        NotifyOnValidationError = true,
+                        Converter = new DecimalConverter() // Optional: custom converter
+                    };
+                    textBox.SetBinding(TextBox.TextProperty, binding);
+
+                    textBox.PreviewTextInput += (s, e) => e.Handled = !IsTextDecimal(e.Text);
+                    DataObject.AddPastingHandler(textBox, (s, e) =>
+                    {
+                        if (e.DataObject.GetDataPresent(DataFormats.Text))
+                        {
+                            string text = (string)e.DataObject.GetData(DataFormats.Text);
+                            if (!IsTextDecimal(text))
+                                e.CancelCommand();
+                        }
+                    });
+
+                    if (field.IsReadOnly)
+                    {
+                        textBox.IsReadOnly = true;
+                        textBox.Background = Brushes.LightGray; // optional
+                    }
+
+                    input = textBox;
+                }
+                else if (field.Type == typeof(DateOnly) || field.Type == typeof(DateOnly?))
+                {
+                    var datePicker = new DatePicker();
+
+                    var binding = new Binding(field.PropertyName)
+                    {
+                        Source = Entity,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged,
+                        Converter = new DateOnlyConverter()
+                    };
+
+                    datePicker.SetBinding(DatePicker.SelectedDateProperty, binding);
+                    input = datePicker;
+                }
                 else
                 {
                     var textBox = new TextBox();
-                    textBox.Text = GetPropertyValue(field.PropertyName)?.ToString() ?? "";
-                    textBox.TextChanged += (_, __) =>
-                        SetPropertyValue(field.PropertyName, Convert.ChangeType(textBox.Text, field.Type));
+                    var binding = new Binding(field.PropertyName)
+                    {
+                        Source = Entity,
+                        Mode = BindingMode.TwoWay,
+                        UpdateSourceTrigger = UpdateSourceTrigger.Explicit
+                    };
+                    textBox.SetBinding(TextBox.TextProperty, binding);
 
-                    if (field.PropertyName.ToLower().Contains("id") && Purpose == "Edit")
+                    if ((field.PropertyName.Equals("Id", StringComparison.OrdinalIgnoreCase)
+                    || field.PropertyName.EndsWith("Id", StringComparison.OrdinalIgnoreCase))
+                    && Purpose == "Edit"
+                    && field.Type == typeof(int))
                         textBox.IsEnabled = false;
+
+                    if (field.IsReadOnly)
+                    {
+                        textBox.IsReadOnly = true;
+                        textBox.Background = Brushes.LightGray; // optional
+                    }
 
                     input = textBox;
                 }
@@ -118,6 +239,39 @@ namespace FigureManagementSystem.Views
 
         private void Save_Click(object sender, RoutedEventArgs e)
         {
+            foreach (var child in FormPanel.Children)
+            {
+                if (child is TextBox textBox)
+                {
+                    if (string.IsNullOrWhiteSpace(textBox.Text.Trim()))
+                    {
+                        MessageBox.Show("Please fill in all required fields.", "Validation Error", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        return;
+                    }
+                    BindingExpression binding = textBox.GetBindingExpression(TextBox.TextProperty);
+                    binding?.UpdateSource();
+
+                    var prop = Entity.GetType().GetProperty(binding?.ParentBinding?.Path?.Path ?? "");
+                    if (prop != null && prop.CanWrite && prop.PropertyType == typeof(string))
+                    {
+                        var currentValue = prop.GetValue(Entity) as string;
+                        if (currentValue != null)
+                        {
+                            prop.SetValue(Entity, currentValue.Trim());
+                        }
+                    }
+                }
+                else if (child is CheckBox checkBox)
+                {
+                    BindingExpression binding = checkBox.GetBindingExpression(CheckBox.IsCheckedProperty);
+                    binding?.UpdateSource();
+                }
+                else if (child is ComboBox comboBox)
+                {
+                    BindingExpression binding = comboBox.GetBindingExpression(ComboBox.SelectedValueProperty);
+                    binding?.UpdateSource();
+                }
+            }
             IsSaved = true;
             DialogResult = true;
             Close();
@@ -128,6 +282,16 @@ namespace FigureManagementSystem.Views
             IsSaved = false;
             DialogResult = false;
             Close();
+        }
+
+        private bool IsTextInteger(string text)
+        {
+            return int.TryParse(text, out _);
+        }
+
+        private bool IsTextDecimal(string text)
+        {
+            return decimal.TryParse(text, out _);
         }
     }
 }

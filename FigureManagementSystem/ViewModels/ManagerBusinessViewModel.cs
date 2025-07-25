@@ -7,6 +7,7 @@ using System.Windows;
 using FigureManagementSystem.Helpers;
 using FigureManagementSystem.Models;
 using FigureManagementSystem.Views;
+using Microsoft.EntityFrameworkCore;
 
 namespace FigureManagementSystem.ViewModels
 {
@@ -34,10 +35,11 @@ namespace FigureManagementSystem.ViewModels
                 toggleStatusAction: s => s.IsActive = !(s.IsActive ?? false),
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
+                    new() {Label = "Discount ID", PropertyName = nameof(Discount.Id), Type = typeof(string)},
                     new() {Label = "Name", PropertyName = nameof(Discount.Name), Type = typeof(string)},
                     new() {Label = "Activate Date", PropertyName = nameof(Discount.ActivateDate), Type = typeof(DateOnly)},
                     new() {Label = "Expire Date", PropertyName = nameof(Discount.ExpireDate), Type = typeof(DateOnly)},
-                    new() {Label = "Type", PropertyName = nameof(Discount.Type), Type = typeof(string)},
+                    new() {Label = "Type", PropertyName = nameof(Discount.Type), Type = typeof(DiscountType) },
                     new() {Label = "Value", PropertyName = nameof(Discount.Value), Type = typeof(decimal)},
                     new() {Label = "IsActive", PropertyName = nameof(Discount.IsActive), Type = typeof(bool?)},
                 }
@@ -73,9 +75,9 @@ namespace FigureManagementSystem.ViewModels
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
                     new() {Label = "OrderId", PropertyName = nameof(Payment.OrderId), Type = typeof(int)},
-                    new() {Label = "Method", PropertyName = nameof(Payment.Method), Type = typeof(string)},
+                    new() {Label = "Method", PropertyName = nameof(Payment.Method), Type = typeof(PaymentMethod)},
                     new() {Label = "Amount", PropertyName = nameof(Payment.Amount), Type = typeof(decimal)},
-                    new() {Label = "Status", PropertyName = nameof(Payment.Status), Type = typeof(string)},
+                    new() {Label = "Status", PropertyName = nameof(Payment.Status), Type = typeof(PaymentStatus)},
                     new() {Label = "PaymentDate", PropertyName = nameof(Payment.PaymentDate), Type = typeof(DateOnly)},
                     new() {Label = "IsActive", PropertyName = nameof(Payment.IsActive), Type = typeof(bool?)},
                 }
@@ -115,9 +117,7 @@ namespace FigureManagementSystem.ViewModels
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
                     new() {Label = "OrderDate", PropertyName = nameof(Order.OrderDate), Type = typeof(DateOnly)},
-                    new() {Label = "Total", PropertyName = nameof(Order.Total), Type = typeof(decimal)},
-                    new() {Label = "Users", PropertyName = nameof(Order.UserId), Type = typeof(string)},
-                    new() {Label = "DiscountId", PropertyName = nameof(Order.DiscountId), Type = typeof(string)},
+                    new() {Label = "Total", PropertyName = nameof(Order.Total), Type = typeof(decimal), IsReadOnly = true},
                     new() {Label = "IsActive", PropertyName = nameof(Order.IsActive), Type = typeof(bool?)},
                 }
             );
@@ -140,6 +140,7 @@ namespace FigureManagementSystem.ViewModels
                     Label = "Discount",
                     PropertyName = nameof(Order.DiscountId),
                     LinkedEntityType = typeof(Discount),
+                    DisplayMemberPath = "Name",
                     ItemsSourceProvider = () => discountList,
                     DisplayMemberSelector = d => ((Discount)d).Id
                 }
@@ -147,7 +148,7 @@ namespace FigureManagementSystem.ViewModels
             viewModel.ForeignKeyMappings["UserId"] = new ForeignKeyMapping
             {
                 EntityType = typeof(User),
-                DisplayProperty = "Id"
+                DisplayProperty = "FullName"
             };
             viewModel.ForeignKeyMappings["DiscountId"] = new ForeignKeyMapping
             {
@@ -173,21 +174,21 @@ namespace FigureManagementSystem.ViewModels
 
         private void btnDetails_Click(object sender, RoutedEventArgs e)
         {
-            var orderList = new FigureManagementSystemContext().Orders.ToList();
-            var productList = new FigureManagementSystemContext().Products.ToList();
+            var context = new FigureManagementSystemContext();
+
+            var orderList = context.Orders.ToList();
+            var productList = context.Products.ToList();
 
             var viewModel = new GenericManagementViewModel<OrderDetail, int>(
                 ownerWindow: Application.Current.MainWindow,
                 entityName: "OrderDetail",
                 idSelector: od => od.Id,
-                displayNameSelector: od => string.Join(" - ", od.Product.Name, od.Quantity),
+                displayNameSelector: od => string.Join(" - ", od.Id, od.Quantity),
                 searchPredicate: null,
                 toggleStatusAction: od => od.IsActive = !(od.IsActive ?? false),
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
-                    new() {Label = "OrderId", PropertyName = nameof(OrderDetail.OrderId), Type = typeof(int)},
-                    new() {Label = "ProductId", PropertyName = nameof(OrderDetail.ProductName), Type = typeof(int)},
-                    new() {Label = "Price", PropertyName = nameof(OrderDetail.Price), Type = typeof(decimal)},
+                    new() {Label = "Price", PropertyName = nameof(OrderDetail.Price), Type = typeof(decimal), IsReadOnly = true},
                     new() {Label = "Quantity", PropertyName = nameof(OrderDetail.Quantity), Type = typeof(int)},
                     new() {Label = "IsActive", PropertyName = nameof(OrderDetail.IsActive), Type = typeof(bool?)},
                 }
@@ -211,6 +212,7 @@ namespace FigureManagementSystem.ViewModels
                     Label = "Product",
                     PropertyName = nameof(OrderDetail.ProductId),
                     LinkedEntityType = typeof(Product),
+                    DisplayMemberPath = "Name",
                     ItemsSourceProvider = () => productList,
                     DisplayMemberSelector = p => ((Product)p).Name
                 }

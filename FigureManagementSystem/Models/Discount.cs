@@ -3,6 +3,12 @@ using System.Collections.Generic;
 
 namespace FigureManagementSystem.Models;
 
+public enum DiscountType
+{
+    Fixed,
+    Percent
+}
+
 public partial class Discount
 {
     public string Id { get; set; } = null!;
@@ -13,7 +19,7 @@ public partial class Discount
 
     public DateOnly ExpireDate { get; set; }
 
-    public string Type { get; set; } = null!;
+    public DiscountType Type { get; set; }
 
     public decimal Value { get; set; }
 

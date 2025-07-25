@@ -28,15 +28,17 @@ namespace FigureManagementSystem.Views
 
         private void DataGrid_AutoGeneratingColumn(object sender, DataGridAutoGeneratingColumnEventArgs e)
         {
-            if (e.PropertyName == nameof(OrderDetail.ProductName))
-            {
-                e.Cancel = true;
-                return;
-            }
+            var dataGrid = (DataGrid)sender;
+            dataGrid.IsReadOnly = true;
 
             if (e.PropertyName == nameof(OrderDetail.ProductId))
             {
                 e.Column.Header = "Product Name";
+            }
+
+            if (e.PropertyName == nameof(Order.UserId))
+            {
+                e.Column.Header = "User Full Name";
             }
 
 
@@ -46,7 +48,14 @@ namespace FigureManagementSystem.Views
             {
                 e.Cancel = true; 
             }
-            else if (!propertyType.IsPrimitive && propertyType != typeof(string) && propertyType != typeof(decimal) && propertyType != typeof(DateTime) && propertyType != typeof(bool) && propertyType != typeof(bool?))
+            else if (!propertyType.IsPrimitive 
+                && propertyType != typeof(string) 
+                && propertyType != typeof(decimal) 
+                && propertyType != typeof(DateTime)
+                && propertyType != typeof(DateOnly)
+                && propertyType != typeof(bool) 
+                && propertyType != typeof(bool?)
+                && !propertyType.IsEnum)
             {
                 e.Cancel = true;
             }

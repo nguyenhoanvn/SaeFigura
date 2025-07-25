@@ -267,8 +267,11 @@ namespace FigureManagementSystem.ViewModels
 
         public void OnEditSelected()
         {
-            if (SelectedEntity == null) return;
-
+            if (SelectedEntity == null)
+            {
+                MessageBox.Show("Please select an entity to edit.", "No Selection", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
             var clone = new TEntity();
             CopyEntityProperties(SelectedEntity, clone);
 
@@ -388,6 +391,13 @@ namespace FigureManagementSystem.ViewModels
                         prop.SetValue(target, value);
                     }
                 }
+            }
+
+            var idProp = typeof(TEntity).GetProperty("Id");
+            if (idProp != null && idProp.CanWrite && idProp.PropertyType == typeof(int))
+            {
+                var idValue = idProp.GetValue(source);
+                idProp.SetValue(target, idValue);
             }
         }
 

@@ -15,8 +15,6 @@ public partial class OrderDetail
 
     public int Quantity { get; set; }
 
-    public string ProductName => Product?.Name ?? string.Empty;
-
     public bool? IsActive { get; set; }
 
     public virtual Order Order { get; set; } = null!;
