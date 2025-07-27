@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using FigureManagementSystem.Helpers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 namespace FigureManagementSystem.Models;
 
@@ -28,7 +29,7 @@ public partial class FigureManagementSystemContext : DbContext
 
     public virtual DbSet<OrderDetail> OrderDetails { get; set; }
 
-    public virtual DbSet<Payment> Payments { get; set; }
+    /*public virtual DbSet<Payment> Payments { get; set; }*/
 
     public virtual DbSet<Product> Products { get; set; }
 
@@ -39,9 +40,14 @@ public partial class FigureManagementSystemContext : DbContext
     public virtual DbSet<User> Users { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see https://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=localhost;Database=FigureManagementSystem;UId=sa;pwd=123;TrustServerCertificate=True");
-
+    {
+        var config = new ConfigurationBuilder().AddJsonFile("appsettings.json").Build();
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseSqlServer(config.GetConnectionString("DB"));
+        }
+    }
+        
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Brand>(entity =>
@@ -137,7 +143,7 @@ public partial class FigureManagementSystemContext : DbContext
                 .HasConstraintName("FK__OrderDeta__Produ__70DDC3D8");
         });
 
-        modelBuilder.Entity<Payment>(entity =>
+        /*modelBuilder.Entity<Payment>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Payment__3214EC07B80EB9CB");
 
@@ -158,7 +164,7 @@ public partial class FigureManagementSystemContext : DbContext
                 .HasForeignKey(d => d.OrderId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Payment__OrderId__6A30C649");
-        });
+        });*/
 
         modelBuilder.Entity<Product>(entity =>
         {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using FigureManagementSystem.Helpers;
 using FigureManagementSystem.Models;
 using FigureManagementSystem.Views;
@@ -18,10 +19,22 @@ namespace FigureManagementSystem.ViewModels
         {
             _window = window;
             _window.btnDiscounts.Click += btnDiscounts_Click;
-            _window.btnPayments.Click += btnPayments_Click;
+/*            _window.btnPayments.Click += btnPayments_Click;*/
             _window.btnOrders.Click += btnOrders_Click;
             _window.btnDetails.Click += btnDetails_Click;
             _window.btnUsers.Click += btnUsers_Click;
+            LogoutCommand = new RelayCommand(_ => Logout());
+        }
+
+        public ICommand LogoutCommand { get; }
+        private void Logout()
+        {
+
+            var loginWindow = new LoginWindow();
+            Application.Current.MainWindow = loginWindow;
+            loginWindow.Show();
+
+            _window.Close();
         }
 
         private void btnDiscounts_Click(object sender, RoutedEventArgs e)
@@ -63,7 +76,7 @@ namespace FigureManagementSystem.ViewModels
             window.ShowDialog();
         }
 
-        private void btnPayments_Click(object sender, RoutedEventArgs e)
+        /*private void btnPayments_Click(object sender, RoutedEventArgs e)
         {
             var viewModel = new GenericManagementViewModel<Payment, int>(
                 ownerWindow: Application.Current.MainWindow,
@@ -82,6 +95,7 @@ namespace FigureManagementSystem.ViewModels
                     new() {Label = "IsActive", PropertyName = nameof(Payment.IsActive), Type = typeof(bool?)},
                 }
             );
+            viewModel.IsWriteable = false;
             viewModel.WindowTitle = "Payment Management Window";
             viewModel.WindowSubtitle = "Manage your Payment in database";
 
@@ -99,7 +113,7 @@ namespace FigureManagementSystem.ViewModels
             };
 
             window.ShowDialog();
-        }
+        }*/
 
         private void btnOrders_Click(object sender, RoutedEventArgs e)
         {
@@ -121,6 +135,7 @@ namespace FigureManagementSystem.ViewModels
                     new() {Label = "IsActive", PropertyName = nameof(Order.IsActive), Type = typeof(bool?)},
                 }
             );
+            viewModel.IsWriteable = false;
             viewModel.WindowTitle = "Orders Management Window";
             viewModel.WindowSubtitle = "Manage your Orders in database";
             viewModel.LinkedEntities = new List<LinkedEntityDefinition>
@@ -193,6 +208,7 @@ namespace FigureManagementSystem.ViewModels
                     new() {Label = "IsActive", PropertyName = nameof(OrderDetail.IsActive), Type = typeof(bool?)},
                 }
             );
+            viewModel.IsWriteable = false;
             viewModel.WindowTitle = "Order Details Management Window";
             viewModel.WindowSubtitle = "Manage your Order Details in database";
             viewModel.LinkedEntities = new List<LinkedEntityDefinition>
@@ -247,20 +263,21 @@ namespace FigureManagementSystem.ViewModels
         private void btnUsers_Click(object sender, RoutedEventArgs e)
         {
             var rolesList = new FigureManagementSystemContext().Users.ToList();
-            var viewModel = new GenericManagementViewModel<Role, int>(
+            var viewModel = new GenericManagementViewModel<User, string>(
                 ownerWindow: Application.Current.MainWindow,
-                entityName: "Roles",
+                entityName: "Users",
                 idSelector: r => r.Id,
-                displayNameSelector: r => r.Name,
-                searchPredicate: (r, text) => r.Name.Contains(text, StringComparison.OrdinalIgnoreCase),
+                displayNameSelector: r => r.FullName,
+                searchPredicate: (r, text) => r.FullName.Contains(text, StringComparison.OrdinalIgnoreCase),
                 toggleStatusAction: r => r.IsActive = !(r.IsActive ?? false),
                 fieldDefinitions: new List<Helpers.FieldDefinition>
                 {
-                    new() {Label = "Name", PropertyName = nameof(Role.Name), Type = typeof(string)},
+                    new() {Label = "Full Name", PropertyName = nameof(User.FullName), Type = typeof(string)},
                     new() {Label = "IsActive", PropertyName = nameof(Role.IsActive), Type = typeof(bool?)},
                 }
 
             );
+            viewModel.IsWriteable = false;
             viewModel.WindowTitle = "Roles Management Window";
             viewModel.WindowSubtitle = "Manage your Roles in database";
             viewModel.LinkedEntities = new List<LinkedEntityDefinition>
@@ -274,7 +291,7 @@ namespace FigureManagementSystem.ViewModels
                     DisplayMemberSelector = r => ((Role)r).Name
                 }
             };
-            viewModel.ForeignKeyMappings["Role Id"] = new ForeignKeyMapping
+            viewModel.ForeignKeyMappings["RoleId"] = new ForeignKeyMapping
             {
                 EntityType = typeof(Role),
                 DisplayProperty = "Name"

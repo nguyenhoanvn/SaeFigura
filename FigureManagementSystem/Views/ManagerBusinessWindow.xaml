@@ -9,6 +9,38 @@
 
     <helpers:FullScreenWindow.Resources>
         <!-- Button Style -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Padding" Value="7"/>
+            <Setter Property="Background" Value="#007BFF"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Margin" Value="5"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+            CornerRadius="4"
+            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                        VerticalAlignment="Center"
+                              Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="#0056B3"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter Property="Background" Value="#004085"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        
         <Style x:Key="NavigationButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#4A90E2"/>
             <Setter Property="Foreground" Value="White"/>
@@ -89,18 +121,31 @@
         <Border Grid.Row="0" 
                 Background="#2C3E50" 
                 Padding="20">
-            <StackPanel>
-                <TextBlock Text="Admin Dashboard - Figure Management System" 
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="9*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" Text="Admin Dashboard - Figure Management System" 
                           FontSize="32" 
                           FontWeight="Bold" 
                           Foreground="White" 
                           HorizontalAlignment="Center"/>
-                <TextBlock Text="Navigate to different management sections" 
+                <TextBlock Grid.Row="1" Text="Navigate to different management sections" 
                           FontSize="16" 
                           Foreground="#BDC3C7" 
                           HorizontalAlignment="Center" 
                           Margin="0,5,0,0"/>
-            </StackPanel>
+                <Button Grid.Column="1"
+                    x:Name="btnLogout"
+                    Content="Logout"
+                        Command="{Binding LogoutCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"/>
+            </Grid>
         </Border>
 
         <!-- Main Content Area -->
@@ -123,18 +168,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- Characters Management Card -->
-                <Border Style="{StaticResource CardStyle}">
-                    <StackPanel>
-                        <TextBlock Text="Payment Management" 
-                                  Style="{StaticResource HeaderStyle}"/>
-                        <TextBlock Text="Manage money related information"
-                                  Style="{StaticResource DescriptionStyle}"/>
-                        <Button x:Name="btnPayments"
-                                Content="Manage Payments"
-                                Style="{StaticResource NavigationButtonStyle}"/>
-                    </StackPanel>
-                </Border>
+                
 
                 <!-- Brands Management Card -->
                 <Border Style="{StaticResource CardStyle}">

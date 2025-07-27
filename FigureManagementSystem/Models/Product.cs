@@ -10,6 +10,20 @@ public partial class Product
     public string Name { get; set; } = null!;
 
     public string? ImagePath { get; set; }
+    public string AbsoluteImagePath
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(ImagePath))
+                return null;
+
+            if (System.IO.Path.IsPathRooted(ImagePath))
+                return ImagePath;
+
+            return System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ImagePath);
+        }
+    }
+
 
     public int BrandId { get; set; }
 

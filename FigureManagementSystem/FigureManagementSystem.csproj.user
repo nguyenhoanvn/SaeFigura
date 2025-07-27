@@ -20,6 +20,9 @@
     <Compile Update="Views\MasterDataWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\POSWindow.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\RegisterWindow.xaml.cs">
       <SubType>Code</SubType>
     </Compile>

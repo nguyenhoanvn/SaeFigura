@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
@@ -40,3 +40,4 @@ public partial class Payment
 
     public virtual Order Order { get; set; } = null!;
 }
+*/

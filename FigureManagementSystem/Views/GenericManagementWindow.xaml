@@ -338,6 +338,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
                 <!-- Selection Info -->
@@ -359,7 +360,8 @@
 
                 <!-- Action Buttons -->
                 <StackPanel Grid.Column="1" 
-                       Orientation="Horizontal">
+                       Orientation="Horizontal"
+                            Visibility="{Binding IsWriteable, Converter={StaticResource BoolToVis}}">
                     <Button x:Name="btnAddNew"
                             Command="{Binding AddNewCommand}"
                         Content="➕ Add New Series"
@@ -370,20 +372,23 @@
                         Content="✏️ Edit Selected"
                         Style="{StaticResource WarningButtonStyle}"
                         IsEnabled="True"/>
-
+                
                     <Button x:Name="btnDeleteSelected"
                             Command="{Binding DeleteSelectedCommand}"
                         Content="🗑️ Delete Selected"
                         Style="{StaticResource DangerButtonStyle}"
                         IsEnabled="True"/>
 
-                    <Button x:Name="btnToggleStatus"
-                            Command="{Binding ToggleStatusCommand}"
-                        Content="🔄 Toggle Status"
-                        Style="{StaticResource PrimaryButtonStyle}"
-                        Background="#17A2B8"
-                        IsEnabled="True"/>
                 </StackPanel>
+                <StackPanel Grid.Column="2">
+                    <Button x:Name="btnToggleStatus"
+    Command="{Binding ToggleStatusCommand}"
+Content="🔄 Toggle Status"
+Style="{StaticResource PrimaryButtonStyle}"
+Background="#17A2B8"
+IsEnabled="True"/>
+                </StackPanel>
+                
             </Grid>
         </Border>
         <fragments:FooterControl Grid.Row="5"/>

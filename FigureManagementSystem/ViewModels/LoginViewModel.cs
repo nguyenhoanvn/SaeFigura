@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using FigureManagementSystem.Helpers;
 using FigureManagementSystem.Models;
 using FigureManagementSystem.Views;
 
@@ -17,11 +18,8 @@ namespace FigureManagementSystem.ViewModels
         {
             _window = window;
 
-            // Assign event handlers to the view's controls
             _window.CloseButton.Click += CloseButton_Click;
             _window.LoginButton.Click += LoginButton_Click;
-            _window.GoogleLoginButton.Click += GoogleLoginButton_Click;
-            _window.ForgotPasswordButton.Click += ForgotPasswordButton_Click;
             _window.RegisterButton.Click += RegisterButton_Click;
             _window.ShowPasswordButton.Click += ShowPasswordButton_Click;
             _window.KeyDown += LoginScreen_KeyDown;
@@ -70,8 +68,40 @@ namespace FigureManagementSystem.ViewModels
 
             if (AuthenticateUser(username, password))
             {
-                MessageBox.Show("Good", "Login success",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                using (var context = new FigureManagementSystemContext())
+                {
+                    var user = context.Users.FirstOrDefault(u => (u.Id == username) && u.IsActive == true);
+
+                    if (user != null || !VerifyPassword(password, user.Password))
+                    {
+                        SessionManager.SetCurrentUser(user);
+                        var roleName = context.Roles.FirstOrDefault(r => r.Id == user.RoleId)?.Name;
+                        switch (roleName)
+                        {
+                            case "Admin":
+                                var masterDataWindow = new MasterDataWindow();
+                                Application.Current.MainWindow = masterDataWindow;
+                                masterDataWindow.Show();
+                                Application.Current.Windows.OfType<LoginWindow>().FirstOrDefault()?.Close();
+                                break;
+                            case "Manager":
+                                var managerBusinessWindow = new ManagerBusinessWindow();
+                                Application.Current.MainWindow = managerBusinessWindow;
+                                managerBusinessWindow.Show();
+                                Application.Current.Windows.OfType<LoginWindow>().FirstOrDefault()?.Close();
+                                break;
+                            case "Staff":
+                                var posWindow = new POSWindow();
+                                Application.Current.MainWindow = posWindow;
+                                posWindow.Show();
+                                Application.Current.Windows.OfType<LoginWindow>().FirstOrDefault()?.Close();
+                                break;
+                        }
+                    } else
+                    {
+                        MessageBox.Show("An error occurred when we try to log you in.");
+                    }
+                }
             }
             else
             {
@@ -97,7 +127,7 @@ namespace FigureManagementSystem.ViewModels
 
                 if (user != null)
                 {
-                    return user.Password.Equals(password);
+                    return VerifyPassword(password, user.Password);
                 }
                 else
                 {
@@ -128,18 +158,6 @@ namespace FigureManagementSystem.ViewModels
             }
         }
 
-        private void GoogleLoginButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Google login functionality will be implemented here.",
-                "Google Login", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void ForgotPasswordButton_Click(object sender, RoutedEventArgs e)
-        {
-            MessageBox.Show("Forgot password functionality will be implemented here.",
-                "Forgot Password", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
         private void RegisterButton_Click(object sender, RoutedEventArgs e)
         {
             RegisterWindow registerWindow = new RegisterWindow();
@@ -154,7 +172,7 @@ namespace FigureManagementSystem.ViewModels
 
         private bool VerifyPassword(string password, string hashedPassword)
         {
-            return BCrypt.Net.BCrypt.Verify(password, hashedPassword);
+            return !string.IsNullOrEmpty(password) && BCrypt.Net.BCrypt.Verify(password, hashedPassword);
         }
     }
 }

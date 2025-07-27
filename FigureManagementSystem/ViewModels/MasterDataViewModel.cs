@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 
 namespace FigureManagementSystem.ViewModels
 {
@@ -22,6 +23,18 @@ namespace FigureManagementSystem.ViewModels
             _window.btnBrands.Click += BtnBrands_Click;
             _window.btnCategories.Click += BtnCategories_Click;
             _window.btnRoles.Click += BtnRoles_Click;
+            LogoutCommand = new RelayCommand(_ => Logout());
+        }
+
+        public ICommand LogoutCommand { get; }
+        private void Logout()
+        {
+
+            var loginWindow = new LoginWindow();
+            Application.Current.MainWindow = loginWindow;
+            loginWindow.Show();
+
+            _window.Close();
         }
 
         private void BtnSeries_Click(object sender, RoutedEventArgs e)

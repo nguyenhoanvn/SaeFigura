@@ -39,6 +39,8 @@ namespace FigureManagementSystem.ViewModels
         public Dictionary<string, object?> SelectedFilters { get; set; } = new();
         public ObservableCollection<FilterItem> FilterItems { get; } = new();
 
+        public ICommand ShowOrderDetailsCommand { get; }
+
 
         public TEntity? SelectedEntity { get; set; }
         public string _searchText = "";
@@ -76,6 +78,7 @@ namespace FigureManagementSystem.ViewModels
         public string EmptyStateTitle => $"No {_entityName} found";
         public string EmptyStateSubtitle => $"Click 'Add New {_entityName}' to get started";
         public bool HasSearch => _searchPredicate != null;
+        public bool IsWriteable { get; set; } = true;
         public Visibility EmptyStateVisibility { get; set; } = Visibility.Collapsed;
         
         private readonly Func<TEntity, TKey> _idSelector;
@@ -137,6 +140,15 @@ namespace FigureManagementSystem.ViewModels
             EditSelectedCommand = new RelayCommand(_ => OnEditSelected());
             DeleteSelectedCommand = new RelayCommand(_ => OnDeleteSelected());
             ToggleStatusCommand = new RelayCommand(_ => OnToggleStatus());
+
+            ShowOrderDetailsCommand = new RelayCommand(orderObj =>
+            {
+                if (orderObj is Order order)
+                {
+                    // Open the OrderDetail window
+                    ShowOrderDetailsWindow(order.Id);
+                }
+            });
 
             LoadEntities();
         }
@@ -400,6 +412,86 @@ namespace FigureManagementSystem.ViewModels
                 idProp.SetValue(target, idValue);
             }
         }
+        private void ShowOrderDetailsWindow(int orderId)
+        {
+            var context = new FigureManagementSystemContext();
+
+            var orderList = context.Orders.ToList();
+            var productList = context.Products.ToList();
+
+            // Pre-filter OrderDetails by the orderId
+            var orderDetails = context.OrderDetails
+                                      .Where(od => od.OrderId == orderId)
+                                      .ToList();
+
+            var viewModel = new GenericManagementViewModel<OrderDetail, int>(
+                ownerWindow: _ownerWindow,
+                entityName: "OrderDetail",
+                idSelector: od => od.Id,
+                displayNameSelector: od => string.Join(" - ", od.Id, od.Quantity),
+                // Here's where you filter:
+                searchPredicate: null,
+                toggleStatusAction: od => od.IsActive = !(od.IsActive ?? false),
+                fieldDefinitions: new List<Helpers.FieldDefinition>
+                {
+            new() {Label = "Price", PropertyName = nameof(OrderDetail.Price), Type = typeof(decimal), IsReadOnly = true},
+            new() {Label = "Quantity", PropertyName = nameof(OrderDetail.Quantity), Type = typeof(int)},
+            new() {Label = "IsActive", PropertyName = nameof(OrderDetail.IsActive), Type = typeof(bool?)},
+                }
+            );
+            viewModel.IsWriteable = false;
+            viewModel.WindowTitle = $"Order #{orderId} - Details";
+            viewModel.WindowSubtitle = "Manage order items for a selected order";
+            viewModel.FilteredEntities = new ObservableCollection<OrderDetail>(orderDetails);
+            viewModel.LinkedEntities = new List<LinkedEntityDefinition>
+    {
+        new()
+        {
+            Label = "Order",
+            PropertyName = nameof(OrderDetail.OrderId),
+            DisplayMemberPath = "Id",
+            LinkedEntityType = typeof(Order),
+            ItemsSourceProvider = () => orderList,
+            DisplayMemberSelector = o => ((Order)o).Id.ToString()
+        },
+
+        new()
+        {
+            Label = "Product",
+            PropertyName = nameof(OrderDetail.ProductId),
+            LinkedEntityType = typeof(Product),
+            DisplayMemberPath = "Name",
+            ItemsSourceProvider = () => productList,
+            DisplayMemberSelector = p => ((Product)p).Name
+        }
+    };
+            viewModel.ForeignKeyMappings["OrderId"] = new ForeignKeyMapping
+            {
+                EntityType = typeof(Order),
+                DisplayProperty = "Id"
+            };
+            viewModel.ForeignKeyMappings["ProductId"] = new ForeignKeyMapping
+            {
+                EntityType = typeof(Product),
+                DisplayProperty = "Name"
+            };
+
+            var window = new GenericManagementWindow
+            {
+                DataContext = viewModel,
+                Owner = _ownerWindow,
+                ShowInTaskbar = false
+            };
+
+            viewModel.CloseAction = () =>
+            {
+                window.DialogResult = true;
+                window.Close();
+            };
+
+            window.ShowDialog();
+        }
+
 
     }
 }
