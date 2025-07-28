@@ -206,18 +206,18 @@
                        VerticalAlignment="Center">
                     <StackPanel Orientation="Horizontal"
                     Visibility="{Binding HasSearch, Converter={StaticResource BoolToVis}}">
-                    <TextBlock Text="Search:" 
+                        <TextBlock Text="Search:" 
                           FontSize="14" 
                           FontWeight="SemiBold" 
                           Margin="0,0,10,0" 
                           VerticalAlignment="Center"/>
-                    
-                                <TextBox Name="txtSearch"
+
+                        <TextBox Name="txtSearch"
                      Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
                      Width="300"
                      Style="{StaticResource ModernTextBoxStyle}"
                      Tag="Search by series name..."/>
-                                <Button x:Name="btnClearSearch"
+                        <Button x:Name="btnClearSearch"
                     Content="Clear"
                     Command="{Binding ClearSearchCommand}"
                     Style="{StaticResource PrimaryButtonStyle}"
@@ -251,7 +251,7 @@
                     Background="#17A2B8"/>
             </Grid>
         </Border>
-        
+
 
         <Border Grid.Row="2" 
             Background="White" 
@@ -372,7 +372,7 @@
                         Content="✏️ Edit Selected"
                         Style="{StaticResource WarningButtonStyle}"
                         IsEnabled="True"/>
-                
+
                     <Button x:Name="btnDeleteSelected"
                             Command="{Binding DeleteSelectedCommand}"
                         Content="🗑️ Delete Selected"
@@ -388,7 +388,7 @@ Style="{StaticResource PrimaryButtonStyle}"
 Background="#17A2B8"
 IsEnabled="True"/>
                 </StackPanel>
-                
+
             </Grid>
         </Border>
         <fragments:FooterControl Grid.Row="5"/>

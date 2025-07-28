@@ -8,6 +8,7 @@
     <Window.Resources>
         <helpers:BoolToSelectBrushConverter x:Key="BoolToSelectBrush"/>
         <helpers:StockStatusConverter x:Key="StockStatusConverter"/>
+        <helpers:ImagePathConverter x:Key="ImagePathConverter"/>
         <Style x:Key="PrimaryButtonStyle" TargetType="Button">
             <Setter Property="Padding" Value="7"/>
             <Setter Property="Background" Value="#007BFF"/>
@@ -162,7 +163,7 @@
                     Padding="10"
                     BorderThickness="0">
                                             <StackPanel VerticalAlignment="Center" HorizontalAlignment="Stretch">
-                                                <Image Source="{Binding AbsoluteImagePath}"
+                                                <Image Source="{Binding AbsoluteImagePath, Converter={StaticResource ImagePathConverter}}"
                            Height="160"
                            Stretch="Uniform"
                            HorizontalAlignment="Center"

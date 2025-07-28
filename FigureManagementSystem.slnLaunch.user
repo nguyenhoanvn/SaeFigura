@@ -1,0 +1,16 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "FigureManagementSystem\\FigureManagementSystem.csproj",
+        "Action": "StartWithoutDebugging",
+        "DebugTarget": "FigureManagementSystem"
+      },
+      {
+        "Path": "RunterraAI\\RunterraAI.pyproj",
+        "Action": "StartWithoutDebugging"
+      }
+    ]
+  }
+]

@@ -9,10 +9,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="images\default.png" />
     <None Remove="images\naruto_figure.jpeg" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="images\default.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="images\naruto_figure.jpeg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

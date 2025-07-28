@@ -24,9 +24,11 @@ namespace FigureManagementSystem.ViewModels
             _window.btnDetails.Click += btnDetails_Click;
             _window.btnUsers.Click += btnUsers_Click;
             LogoutCommand = new RelayCommand(_ => Logout());
+            OpenChatboxCommand = new RelayCommand(_ => OpenChatbox());
         }
 
         public ICommand LogoutCommand { get; }
+        public ICommand OpenChatboxCommand { get; }
         private void Logout()
         {
 
@@ -310,6 +312,18 @@ namespace FigureManagementSystem.ViewModels
             };
 
             window.ShowDialog();
+        }
+
+        private void OpenChatbox()
+        {
+            var chatboxWindow = new ChatboxWindow();
+
+            var chatboxViewModel = new ChatboxViewModel();
+            chatboxViewModel.CloseWindowAction = chatboxWindow.Close;
+            chatboxWindow.DataContext = chatboxViewModel;
+
+            chatboxWindow.Owner = System.Windows.Application.Current.MainWindow; 
+            chatboxWindow.ShowDialog();
         }
     }
 }

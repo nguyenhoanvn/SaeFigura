@@ -1,0 +1,69 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>f4db0675-8e6e-498f-b57e-0e72cd97b8e3</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>runeterra/api.py</StartupFile>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <Name>RunterraAI</Name>
+    <RootNamespace>RunterraAI</RootNamespace>
+    <IsWindowsApplication>False</IsWindowsApplication>
+    <InterpreterId>Global|PythonCore|3.12</InterpreterId>
+    <LaunchProvider>Standard Python launcher</LaunchProvider>
+    <CommandLineArguments>runeterra.api:app --reload --port 8000</CommandLineArguments>
+    <InterpreterPath>
+    </InterpreterPath>
+    <EnableNativeCodeDebugging>False</EnableNativeCodeDebugging>
+
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+    <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="runeterra\agent.py" />
+    <Compile Include="runeterra\api.py" />
+    <Compile Include="runeterra\config.py" />
+    <Compile Include="runeterra\logger.py" />
+    <Compile Include="runeterra\models.py" />
+    <Compile Include="runeterra\tools.py" />
+    <Compile Include="runeterra\__init__.py" />
+    <Compile Include="RunterraAI.py" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".env" />
+    <Content Include="requirements.txt" />
+    <Content Include="runeterra\__pycache__\agent.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\api.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\app.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\config.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\logging.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\models.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\tools.cpython-312.pyc" />
+    <Content Include="runeterra\__pycache__\__init__.cpython-312.pyc" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="Global|PythonCore|3.12" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="runeterra\" />
+    <Folder Include="runeterra\__pycache__\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.targets" />
+  <!-- Uncomment the CoreCompile target to enable the Build command in
+       Visual Studio and specify your pre- and post-build commands in
+       the BeforeBuild and AfterBuild targets below. -->
+  <!--<Target Name="CoreCompile" />-->
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+</Project>
